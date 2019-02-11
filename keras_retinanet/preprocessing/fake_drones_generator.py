@@ -130,7 +130,7 @@ def resize_img_and_bbox(img, bbox, shape):
 
 # =============================== The generator ==============================
 
-class CSVGenerator(Generator):
+class Drones_Cut_Paste_Generator(Generator):
     """ Generate data for a custom CSV dataset.
 
     See https://github.com/fizyr/keras-retinanet#csv-datasets for more information.
@@ -143,7 +143,8 @@ class CSVGenerator(Generator):
         batch_size, batches_per_epoch,
         image_shape = (224,224,3),
         drone_size_range = (0.4, 0,6),
-        drone_rotation_range = (-45, 45)
+        drone_rotation_range = (-45, 45),
+        kwargs = None # may need something to pass to parent class
     ):
         """ Initialize a CSV data generator.
 
@@ -167,8 +168,6 @@ class CSVGenerator(Generator):
 
         self.image_names = []
         self.image_data  = {}
-        self.drones_dir  = drones_dir
-        self.backg_dir   = backg_dir
         self.image_shape = image_shape
 
 
@@ -179,11 +178,14 @@ class CSVGenerator(Generator):
         # Temp variables
         self.bboxes = {}
 
+        super(Drones_Cut_Paste_Generator, self).__init__(**kwargs)
 
-        super(CSVGenerator, self).__init__(**kwargs)
 
-
-    def decide_drone_positions(N_examples, size_range, angle_range):
+    def decide_drone_positions(self, N_examples, size_range, angle_range):
+        '''
+        Decide drone bounding boxes in advance.
+        TODO: implement
+        '''
         sizes  = np.random.uniform(*size_range, size = N_examples)
         angles = np.random.uniform(*angle_range, size = N_examples)
 
