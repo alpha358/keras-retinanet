@@ -147,7 +147,7 @@ class Drones_Cut_Paste_Generator(Generator):
         image_shape = (224,224,3),
         drone_size_range = (0.4, 0,6),
         drone_rotation_range = (-45, 45),
-        kwargs = None # may need something to pass to parent class
+        # kwargs = None # may need something to pass to parent class
     ):
         """ Initialize a CSV data generator.
 
@@ -181,7 +181,8 @@ class Drones_Cut_Paste_Generator(Generator):
         # Temp variables
         self.bboxes = {}
 
-        super(Drones_Cut_Paste_Generator, self).__init__(**kwargs)
+        # super(Drones_Cut_Paste_Generator, self).__init__(**kwargs)
+        super(Drones_Cut_Paste_Generator, self).__init__()
 
 
     # def decide_drone_positions(self, N_examples, size_range, angle_range):
