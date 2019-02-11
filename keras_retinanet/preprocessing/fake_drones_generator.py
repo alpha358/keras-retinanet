@@ -125,7 +125,7 @@ def resize_img_and_bbox(img, bbox, shape):
     bbox[2] = int(shape[1] * bbox[2] / img.shape[1])
     bbox[3] = int(shape[0] * bbox[3] / img.shape[0])
 
-    return cv2.resize(img, shape), bbox
+    return cv2.resize(img, (shape[0], shape[1]) ), bbox
 
 
 # =============================== The generator ==============================
@@ -144,7 +144,7 @@ class Drones_Cut_Paste_Generator(Generator):
         bgr_imgs, drone_imgs,
         bgr_indexes, drone_indexes,
         batch_size, batches_per_epoch,
-        image_shape = (224,224,3),
+        image_shape = (224, 224,3),
         drone_size_range = (0.4, 0.6),
         drone_rotation_range = (-45, 45),
         # kwargs = None # may need something to pass to parent class
