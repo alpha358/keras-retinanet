@@ -231,7 +231,7 @@ class Drones_Cut_Paste_Generator(Generator):
     #     """
     #     return os.path.join(self.base_dir, self.image_names[image_index])
 
-    def image_aspect_ratio(self):
+    def image_aspect_ratio(self, image_index):
         """ Compute the aspect ratio for an image with image_index.
         """
         # PIL is fast for metadata
