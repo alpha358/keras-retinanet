@@ -145,7 +145,7 @@ class Drones_Cut_Paste_Generator(Generator):
         bgr_indexes, drone_indexes,
         batch_size, batches_per_epoch,
         image_shape = (224,224,3),
-        drone_size_range = (0.4, 0,6),
+        drone_size_range = (0.4, 0.6),
         drone_rotation_range = (-45, 45),
         # kwargs = None # may need something to pass to parent class
     ):
