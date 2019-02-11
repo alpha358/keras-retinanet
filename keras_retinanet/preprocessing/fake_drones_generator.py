@@ -131,9 +131,12 @@ def resize_img_and_bbox(img, bbox, shape):
 # =============================== The generator ==============================
 
 class Drones_Cut_Paste_Generator(Generator):
-    """ Generate data for a custom CSV dataset.
+    """ Generate drone web cut&paste dataset.
+    
 
-    See https://github.com/fizyr/keras-retinanet#csv-datasets for more information.
+        assumption: 
+            "load_image" is called before "load_annotations"
+            see generator.py at line: 300
     """
 
     def __init__(
@@ -181,13 +184,13 @@ class Drones_Cut_Paste_Generator(Generator):
         super(Drones_Cut_Paste_Generator, self).__init__(**kwargs)
 
 
-    def decide_drone_positions(self, N_examples, size_range, angle_range):
-        '''
-        Decide drone bounding boxes in advance.
-        TODO: implement
-        '''
-        sizes  = np.random.uniform(*size_range, size = N_examples)
-        angles = np.random.uniform(*angle_range, size = N_examples)
+    # def decide_drone_positions(self, N_examples, size_range, angle_range):
+    #     '''
+    #     Decide drone bounding boxes in advance.
+    #     TODO: implement if needed
+    #     '''
+    #     sizes  = np.random.uniform(*size_range, size = N_examples)
+    #     angles = np.random.uniform(*angle_range, size = N_examples)
 
 
 
@@ -238,9 +241,8 @@ class Drones_Cut_Paste_Generator(Generator):
     def load_image(self, image_index):
         """ Load an image at the image_index.
         """
-        '''
-            Use image_index ?
-        '''
+        # TODO: May need to change rgb to bgr 
+
         # return read_image_bgr(self.image_path(image_index))
         #
         # X = np.empty((self.batch_size, *self.image_shape, 3), dtype='float32')
