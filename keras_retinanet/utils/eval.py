@@ -169,6 +169,8 @@ def evaluate(
     all_annotations    = _get_annotations(generator)
     average_precisions = {}
 
+    max_overlaps = []
+
     # all_detections = pickle.load(open('all_detections.pkl', 'rb'))
     # all_annotations = pickle.load(open('all_annotations.pkl', 'rb'))
     # pickle.dump(all_detections, open('all_detections.pkl', 'wb'))
@@ -202,6 +204,8 @@ def evaluate(
                 assigned_annotation = np.argmax(overlaps, axis=1)
                 max_overlap         = overlaps[0, assigned_annotation]
 
+                max_overlaps.append(max_overlap)
+
                 if max_overlap >= iou_threshold and assigned_annotation not in detected_annotations:
                     false_positives = np.append(false_positives, 0)
                     true_positives  = np.append(true_positives, 1)
@@ -231,5 +235,7 @@ def evaluate(
         # compute average precision
         average_precision  = _compute_ap(recall, precision)
         average_precisions[label] = average_precision, num_annotations
+
+    print('Mean IOU: %2.2f ' % np.mean(max_overlaps))
 
     return average_precisions
