@@ -94,27 +94,6 @@ def insert_subimg(img, subimg, row, col):
     return result
 
 
-def random_insert(img, subimg, size_range, angle_range):
-
-    min_size, max_size = size_range
-    min_angle, max_angle = angle_range
-
-    size = np.random.uniform(min_size, max_size)
-    size = size * min(img.shape[0], img.shape[1])
-    scale = size / max(subimg.shape[0], subimg.shape[1])
-
-    subimg_resc = cv2.resize(subimg, (int(subimg.shape[1] * scale), int(subimg.shape[0] * scale)))
-
-    angle = np.random.uniform(min_angle, max_angle)
-    subimg_resc = rotate_img(subimg_resc, angle)
-
-    row = np.random.randint(img.shape[0] - subimg_resc.shape[0])
-    col = np.random.randint(img.shape[1] - subimg_resc.shape[1])
-
-    bbox = np.array([col, row, subimg_resc.shape[1], subimg_resc.shape[0]])  # x, y, w, h
-
-    return insert_subimg(img, subimg_resc, row, col), bbox
-
 
 
 
@@ -132,9 +111,9 @@ def resize_img_and_bbox(img, bbox, shape):
 
 class Drones_Cut_Paste_Generator(Generator):
     """ Generate drone web cut&paste dataset.
-    
 
-        assumption: 
+
+        assumption:
             "load_image" is called before "load_annotations"
             see generator.py at line: 300
     """
@@ -144,9 +123,9 @@ class Drones_Cut_Paste_Generator(Generator):
         bgr_imgs, drone_imgs,
         bgr_indexes, drone_indexes,
         batch_size, batches_per_epoch,
-        image_shape = (224, 224,3),
-        drone_size_range = (0.4, 0.6),
-        drone_rotation_range = (-45, 45),
+        image_shape=(224, 224, 3),
+        drone_size_range=(0.4, 0.6),
+        drone_rotation_range=(-45, 45),
         # kwargs = None # may need something to pass to parent class
     ):
         """ Initialize a CSV data generator.
@@ -163,6 +142,9 @@ class Drones_Cut_Paste_Generator(Generator):
         self.batch_size = batch_size
         self.batches_per_epoch = batches_per_epoch
 
+        self.example_cashe = {}  # save generated example configurations
+        #                          such as used drone idx, background idx
+        #                          and bounding boxes
 
         # augmentation parameters
         self.drone_size_range = drone_size_range
@@ -194,6 +176,50 @@ class Drones_Cut_Paste_Generator(Generator):
     #     angles = np.random.uniform(*angle_range, size = N_examples)
 
 
+    # =============================== [img insert] ===========================
+    def random_insert(self, img, subimg, size_range, angle_range, img_idx):
+
+        min_size, max_size = size_range
+        min_angle, max_angle = angle_range
+
+        size = np.random.uniform(min_size, max_size)
+        size = size * min(img.shape[0], img.shape[1])
+        scale = size / max(subimg.shape[0], subimg.shape[1])
+        self.example_cashe[img_idx]['scale'] = scale  # cashe for reproducability of idx
+
+
+        subimg_resc = cv2.resize(subimg, (int(subimg.shape[1] * scale), int(subimg.shape[0] * scale)))
+
+        angle = np.random.uniform(min_angle, max_angle)
+        self.example_cashe[img_idx]['angle'] = angle
+
+        subimg_resc = rotate_img(subimg_resc, angle)
+
+        row = np.random.randint(img.shape[0] - subimg_resc.shape[0])
+        col = np.random.randint(img.shape[1] - subimg_resc.shape[1])
+
+        bbox = np.array([col, row, subimg_resc.shape[1], subimg_resc.shape[0]])  # x, y, w, h
+
+        return insert_subimg(img, subimg_resc, row, col), bbox
+
+    def deterministic_insert(self, img, subimg, img_idx):
+
+        scale = self.example_cashe[img_idx]['scale']
+        angle = self.example_cashe[img_idx]['angle']
+
+        subimg_resc = cv2.resize(subimg,
+                                 ( int(subimg.shape[1] * scale),
+                                   int(subimg.shape[0] * scale) )  )
+                                   
+        subimg_resc = rotate_img(subimg_resc, angle)
+
+        row = np.random.randint(img.shape[0] - subimg_resc.shape[0])
+        col = np.random.randint(img.shape[1] - subimg_resc.shape[1])
+
+        bbox = np.array([col, row, subimg_resc.shape[1], subimg_resc.shape[0]])  # x, y, w, h
+
+        return insert_subimg(img, subimg_resc, row, col), bbox
+    # =============================== [/img insert] ===========================
 
     def size(self):
         """ Size of the dataset.
@@ -242,7 +268,7 @@ class Drones_Cut_Paste_Generator(Generator):
     def load_image(self, image_index):
         """ Load an image at the image_index.
         """
-        # TODO: May need to change rgb to bgr 
+        # TODO: May need to change rgb to bgr
 
         # return read_image_bgr(self.image_path(image_index))
         #
@@ -250,17 +276,32 @@ class Drones_Cut_Paste_Generator(Generator):
         # Y = np.empty((self.batch_size, 5), dtype='float32')
         #
         # for i in range(self.batch_size):
+        # example_cashe[image_index]
 
-        bgr_index = np.random.choice(self.bgr_indexes)
-        drone_index = np.random.choice(self.drone_indexes)
+        # TODO: finish here
+        if image_index in self.example_cashe.keys():
+            bgr_index   = self.example_cashe[image_index]['bgr_index']
+            drone_index = self.example_cashe[image_index]['drone_index']
+        else:
+            bgr_index = np.random.choice(self.bgr_indexes)
+            drone_index = np.random.choice(self.drone_indexes)
+
 
         bgr_img = np.divide(self.bgr_imgs[bgr_index], 255, dtype='float32')
         drone_img = np.divide(self.drone_imgs[drone_index], 255, dtype='float32')
 
-        fake_img, bbox = random_insert(
-                                bgr_img, drone_img,
-                                self.drone_size_range,
-                                self.drone_rotation_range)
+
+        # if image is cashed
+        if image_index in self.example_cashe.keys():
+            # using cashed drone positon and angle, remember by image index
+            fake_img, bbox = self.deterministic_insert(
+                img, subimg, image_index)
+        else:
+            fake_img, bbox = self.random_insert(
+                                    bgr_img, drone_img,
+                                    self.drone_size_range,
+                                    self.drone_rotation_range,
+                                    image_index)
 
         fake_img, bbox = resize_img_and_bbox(fake_img, bbox, self.image_shape)
 
