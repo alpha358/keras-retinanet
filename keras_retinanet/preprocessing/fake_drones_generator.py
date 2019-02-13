@@ -295,7 +295,7 @@ class Drones_Cut_Paste_Generator(Generator):
         if image_index in self.example_cashe.keys():
             # using cashed drone positon and angle, remember by image index
             fake_img, bbox = self.deterministic_insert(
-                img, subimg, image_index)
+                bgr_img, drone_img, image_index)
         else:
             fake_img, bbox = self.random_insert(
                                     bgr_img, drone_img,
