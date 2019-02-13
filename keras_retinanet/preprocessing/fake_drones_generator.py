@@ -279,36 +279,38 @@ class Drones_Cut_Paste_Generator(Generator):
         # X = np.empty((self.batch_size, *self.image_shape, 3), dtype='float32')
         # Y = np.empty((self.batch_size, 5), dtype='float32')
         #
-        # for i in range(self.batch_size):
         # example_cashe[image_index]
 
-        # TODO: finish here
         if image_index in self.example_cashe.keys():
+            # use images associated with image_index
             bgr_index   = self.example_cashe[image_index]['bgr_index']
             drone_index = self.example_cashe[image_index]['drone_index']
+
+            bgr_img = np.divide(self.bgr_imgs[bgr_index], 255, dtype='float32')
+            drone_img = np.divide( self.drone_imgs[drone_index], 255, dtype='float32')
+
+            fake_img, bbox = self.deterministic_insert(
+                bgr_img, drone_img, image_index)
+
         else:
+            # chosen random drone and background imgages
             bgr_index = np.random.choice(self.bgr_indexes)
             drone_index = np.random.choice(self.drone_indexes)
 
+            self.example_cashe[image_index] = {}
             self.example_cashe[image_index]['bgr_index'] = bgr_index
             self.example_cashe[image_index]['drone_index'] = drone_index
 
+            bgr_img = np.divide(self.bgr_imgs[bgr_index], 255, dtype='float32')
+            drone_img = np.divide(self.drone_imgs[drone_index], 255, dtype='float32')
 
-        bgr_img = np.divide(self.bgr_imgs[bgr_index], 255, dtype='float32')
-        drone_img = np.divide(self.drone_imgs[drone_index], 255, dtype='float32')
-
-
-        # if image is cashed
-        if image_index in self.example_cashe.keys():
-            # using cashed drone positon and angle, remember by image index
-            fake_img, bbox = self.deterministic_insert(
-                bgr_img, drone_img, image_index)
-        else:
             fake_img, bbox = self.random_insert(
-                                    bgr_img, drone_img,
-                                    self.drone_size_range,
-                                    self.drone_rotation_range,
-                                    image_index)
+                bgr_img, drone_img,
+                self.drone_size_range,
+                self.drone_rotation_range,
+                image_index)
+
+
 
         fake_img, bbox = resize_img_and_bbox(fake_img, bbox, self.image_shape)
 
