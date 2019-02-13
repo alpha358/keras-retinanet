@@ -178,7 +178,6 @@ class Drones_Cut_Paste_Generator(Generator):
 
     # =============================== [img insert] ===========================
     def random_insert(self, img, subimg, size_range, angle_range, img_idx):
-        self.example_cashe[img_idx] = {}
 
 
         min_size, max_size = size_range
