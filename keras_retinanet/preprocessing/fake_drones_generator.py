@@ -290,6 +290,9 @@ class Drones_Cut_Paste_Generator(Generator):
             bgr_index = np.random.choice(self.bgr_indexes)
             drone_index = np.random.choice(self.drone_indexes)
 
+            self.example_cashe[image_index]['bgr_index'] = bgr_index
+            self.example_cashe[image_index]['drone_index'] = drone_index
+
 
         bgr_img = np.divide(self.bgr_imgs[bgr_index], 255, dtype='float32')
         drone_img = np.divide(self.drone_imgs[drone_index], 255, dtype='float32')
