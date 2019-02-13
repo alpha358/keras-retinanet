@@ -200,6 +200,9 @@ class Drones_Cut_Paste_Generator(Generator):
 
         row = np.random.randint(img.shape[0] - subimg_resc.shape[0])
         col = np.random.randint(img.shape[1] - subimg_resc.shape[1])
+        self.example_cashe[img_idx]['row'] = row
+        self.example_cashe[img_idx]['col'] = col
+
 
         bbox = np.array([col, row, subimg_resc.shape[1], subimg_resc.shape[0]])  # x, y, w, h
 
@@ -216,8 +219,9 @@ class Drones_Cut_Paste_Generator(Generator):
 
         subimg_resc = rotate_img(subimg_resc, angle)
 
-        row = np.random.randint(img.shape[0] - subimg_resc.shape[0])
-        col = np.random.randint(img.shape[1] - subimg_resc.shape[1])
+        row = self.example_cashe[img_idx]['row']
+        col = self.example_cashe[img_idx]['col']
+
 
         bbox = np.array([col, row, subimg_resc.shape[1], subimg_resc.shape[0]])  # x, y, w, h
 
