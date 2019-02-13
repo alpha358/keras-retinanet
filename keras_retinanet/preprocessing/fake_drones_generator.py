@@ -178,6 +178,8 @@ class Drones_Cut_Paste_Generator(Generator):
 
     # =============================== [img insert] ===========================
     def random_insert(self, img, subimg, size_range, angle_range, img_idx):
+        self.example_cashe[img_idx] = {}
+
 
         min_size, max_size = size_range
         min_angle, max_angle = angle_range
@@ -185,6 +187,8 @@ class Drones_Cut_Paste_Generator(Generator):
         size = np.random.uniform(min_size, max_size)
         size = size * min(img.shape[0], img.shape[1])
         scale = size / max(subimg.shape[0], subimg.shape[1])
+
+
         self.example_cashe[img_idx]['scale'] = scale  # cashe for reproducability of idx
 
 
@@ -210,7 +214,7 @@ class Drones_Cut_Paste_Generator(Generator):
         subimg_resc = cv2.resize(subimg,
                                  ( int(subimg.shape[1] * scale),
                                    int(subimg.shape[0] * scale) )  )
-                                   
+
         subimg_resc = rotate_img(subimg_resc, angle)
 
         row = np.random.randint(img.shape[0] - subimg_resc.shape[0])
