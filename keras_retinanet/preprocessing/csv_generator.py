@@ -86,9 +86,16 @@ def _read_annotations(csv_reader, classes):
 
         # Check that the bounding box is valid.
         if x2 <= x1:
-            raise ValueError('line {}: x2 ({}) must be higher than x1 ({})'.format(line, x2, x1))
+            # raise ValueError('line {}: x2 ({}) must be higher than x1 ({})'.format(line, x2, x1))
+            print('line {}: x2 ({}) must be higher than x1 ({})'.format(line, x2, x1))
+            print('skipping this value')
+            continue
+
         if y2 <= y1:
-            raise ValueError('line {}: y2 ({}) must be higher than y1 ({})'.format(line, y2, y1))
+            # raise ValueError('line {}: y2 ({}) must be higher than y1 ({})'.format(line, y2, y1))
+            print('line {}: y2 ({}) must be higher than y1 ({})'.format(line, y2, y1))
+            print('skipping this value')
+            continue
 
         # check if the current class name is correctly present
         if class_name not in classes:
