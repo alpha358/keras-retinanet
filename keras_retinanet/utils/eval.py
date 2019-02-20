@@ -204,6 +204,7 @@ def evaluate(
                 assigned_annotation = np.argmax(overlaps, axis=1)
                 max_overlap         = overlaps[0, assigned_annotation]
 
+
                 max_overlaps.append(max_overlap)
 
                 if max_overlap >= iou_threshold and assigned_annotation not in detected_annotations:
