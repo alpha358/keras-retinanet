@@ -142,7 +142,7 @@ class Drones_Cut_Paste_Generator(Generator):
         self.batch_size = batch_size
         self.batches_per_epoch = batches_per_epoch
 
-        self.deterministic = deterministic
+        # self.deterministic = deterministic
         self.example_cashe = {}  # save generated example configurations
         #                          such as used drone idx, background idx
         #                          and bounding boxes
