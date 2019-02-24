@@ -164,8 +164,8 @@ class Drones_Cut_Paste_Generator(Generator):
         # Temp variables
         self.bboxes = {}
 
-        # super(Drones_Cut_Paste_Generator, self).__init__(**kwargs)
-        super(Drones_Cut_Paste_Generator, self).__init__()
+        # pass args to parent constructor
+        super(Drones_Cut_Paste_Generator, self).__init__(**kwargs)
 
 
     # def decide_drone_positions(self, N_examples, size_range, angle_range):
