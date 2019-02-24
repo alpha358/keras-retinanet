@@ -157,7 +157,6 @@ class Drones_Cut_Paste_Generator(Generator):
             csv_class_file: Path to the CSV classes file.
             base_dir: Directory w.r.t. where the files are to be searched (defaults to the directory containing the csv_data_file).
         """
-        super().__init__(**kwargs)
 
         self.bgr_imgs = bgr_imgs
         self.drone_imgs = drone_imgs
@@ -184,7 +183,7 @@ class Drones_Cut_Paste_Generator(Generator):
         # Temp variables
         self.bboxes = {}
 
-
+        # super().__init__(**kwargs)
         super(Drones_Cut_Paste_Generator, self).__init__(**kwargs)
 
 
