@@ -132,9 +132,9 @@ def resize_img_and_bbox(img, bbox, shape):
 
 class Drones_Cut_Paste_Generator(Generator):
     """ Generate drone web cut&paste dataset.
-    
 
-        assumption: 
+
+        assumption:
             "load_image" is called before "load_annotations"
             see generator.py at line: 300
     """
@@ -147,6 +147,7 @@ class Drones_Cut_Paste_Generator(Generator):
         image_shape = (224, 224,3),
         drone_size_range = (0.4, 0.6),
         drone_rotation_range = (-45, 45),
+        **kwargs # pass to parent class
         # kwargs = None # may need something to pass to parent class
     ):
         """ Initialize a CSV data generator.
@@ -242,7 +243,7 @@ class Drones_Cut_Paste_Generator(Generator):
     def load_image(self, image_index):
         """ Load an image at the image_index.
         """
-        # TODO: May need to change rgb to bgr 
+        # TODO: May need to change rgb to bgr
 
         # return read_image_bgr(self.image_path(image_index))
         #
