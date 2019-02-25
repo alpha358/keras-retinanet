@@ -53,14 +53,15 @@ def estimate_mean_iou(model, generator, n_batches):
     return mean_iou / n
 
 
-def mean_iou(model_test, validation_generator, labels_to_names):
+def mean_iou(model_test, validation_generator, labels_to_names, boxes_plots=False):
     '''
     '''
     # load image
     # image = read_image_bgr('000000008021.jpg')
     N_test_img = 200
 
-    image_array = np.empty(shape=(N_test_img, 480, 640, 3), dtype=np.uint8)
+    if boxes_plots:
+        image_array = np.empty(shape=(N_test_img, 480, 640, 3), dtype=np.uint8)
 
     iou_of_boxes = []
     true_boxes = []
@@ -114,20 +115,14 @@ def mean_iou(model_test, validation_generator, labels_to_names):
             true_boxes.append(annotation_true['bboxes'][0])
             pred_boxes.append(box)
 
+
+        if boxes_plots:
             draw_box(draw, box.astype(int), color=color_pred)  # predicted box
-            draw_box(draw, annotation_true['bboxes']
-                     [0], color=color_true)  # predicted box
+            caption = "{} {:.3f}".format(labels_to_names[label], score)
+            draw_caption(draw, box.astype(int), caption)
+            draw_box(draw, annotation_true['bboxes'][0], color=color_true)  # predicted box
 
-    #         draw_box(draw, b, color=1)
-
-            # caption = "{} {:.3f}".format(labels_to_names[label], score)
-            # draw_caption(draw, box_int, caption)
-
-        image_array[n, :, :, :] = draw
-    #         plt.figure(figsize=(10, 10))
-    #         plt.axis('off')
-    #         plt.imshow(draw)
-    #         plt.show()
+            image_array[n, :, :, :] = draw
 
     iou_of_boxes = np.array(iou_of_boxes)
     return iou_of_boxes, true_boxes, pred_boxes, image_array
