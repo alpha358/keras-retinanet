@@ -62,18 +62,18 @@ def mean_iou(model_test,
     '''
     '''
 
-    if N_img==None:
+    if N_img == None:
         # test all images in generator if not stated othervise
-        N_test_img = validation_generator.size()
+        N_img = validation_generator.size()
 
     if boxes_plots:
-        image_array = np.empty(shape=(N_test_img, 480, 640, 3), dtype=np.uint8)
+        image_array = np.empty(shape=(N_img, 480, 640, 3), dtype=np.uint8)
 
     iou_of_boxes = []
     true_boxes = []
     pred_boxes = []
 
-    for n in tqdm.tqdm(range(N_test_img)):
+    for n in tqdm.tqdm(range(N_img)):
         img_idx = n
         # load image
         image = validation_generator.load_image(img_idx)
@@ -129,6 +129,7 @@ def mean_iou(model_test,
             draw_box(draw, annotation_true['bboxes'][0], color=color_true)  # predicted box
 
             image_array[n, :, :, :] = draw
+
 
     iou_of_boxes = np.array(iou_of_boxes)
 
