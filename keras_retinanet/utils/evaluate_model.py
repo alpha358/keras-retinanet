@@ -53,12 +53,17 @@ def estimate_mean_iou(model, generator, n_batches):
     return mean_iou / n
 
 
-def mean_iou(model_test, validation_generator, labels_to_names, boxes_plots=False):
+def mean_iou(model_test,
+                validation_generator,
+                labels_to_names,
+                N_img = None,
+                boxes_plots=False, ):
     '''
     '''
-    # load image
-    # image = read_image_bgr('000000008021.jpg')
-    N_test_img = 200
+
+    if N_img==None:
+        # test all images in generator if not stated othervise
+        N_test_img = validation_generator.size()
 
     if boxes_plots:
         image_array = np.empty(shape=(N_test_img, 480, 640, 3), dtype=np.uint8)
