@@ -128,6 +128,7 @@ class CSVGenerator(Generator):
         csv_data_file,
         csv_class_file,
         base_dir=None,
+        grayscale=False,
         **kwargs
     ):
         """ Initialize a CSV data generator.
@@ -140,6 +141,8 @@ class CSVGenerator(Generator):
         self.image_names = []
         self.image_data  = {}
         self.base_dir    = base_dir
+
+        self.grayscale   = grayscale
 
         # Take base_dir from annotations file if not explicitly specified.
         if self.base_dir is None:
@@ -211,7 +214,15 @@ class CSVGenerator(Generator):
     def load_image(self, image_index):
         """ Load an image at the image_index.
         """
-        return read_image_bgr(self.image_path(image_index))
+        img = read_image_bgr(self.image_path(image_index))
+        if self.grayscale:
+            img_gray = np.mean(img, axis = 2)
+            img[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
+            img[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
+            img[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
+
+
+        return img
 
     def load_annotations(self, image_index):
         """ Load annotations for an image_index.
