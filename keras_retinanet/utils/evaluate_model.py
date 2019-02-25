@@ -9,6 +9,7 @@ from keras_retinanet.utils.image import read_image_bgr, preprocess_image, resize
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 from keras_retinanet.utils.colors import label_color
 import time
+import tqdm
 
 def iou(box1, box2):
     '''
@@ -72,7 +73,7 @@ def mean_iou(model_test,
     true_boxes = []
     pred_boxes = []
 
-    for n in range(N_test_img):
+    for n in tqdm.tqdm(range(N_test_img)):
         img_idx = n
         # load image
         image = validation_generator.load_image(img_idx)
@@ -96,7 +97,7 @@ def mean_iou(model_test,
         boxes, scores, labels = model_test.predict_on_batch(
             np.expand_dims(image, axis=0))
     #     boxes, scores = model.predict_on_batch(np.expand_dims(image, axis=0))
-        print("processing time: ", time.time() - start)
+        # print("processing time: ", time.time() - start)
 
         # correct for image scale
         boxes /= scale
