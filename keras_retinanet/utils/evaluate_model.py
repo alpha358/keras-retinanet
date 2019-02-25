@@ -130,4 +130,8 @@ def mean_iou(model_test,
             image_array[n, :, :, :] = draw
 
     iou_of_boxes = np.array(iou_of_boxes)
-    return iou_of_boxes, true_boxes, pred_boxes, image_array
+
+    if boxes_plots:
+        return iou_of_boxes, true_boxes, pred_boxes, image_array
+    else:
+        return iou_of_boxes, true_boxes, pred_boxes
