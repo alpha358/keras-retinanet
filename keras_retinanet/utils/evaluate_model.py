@@ -8,7 +8,7 @@ import numpy as np
 from keras_retinanet.utils.image import read_image_bgr, preprocess_image, resize_image
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 from keras_retinanet.utils.colors import label_color
-
+import time
 
 def iou(box1, box2):
     '''
