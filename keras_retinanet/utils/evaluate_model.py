@@ -60,31 +60,30 @@ def mean_iou(model_test, validation_generator, labels_to_names):
     # image = read_image_bgr('000000008021.jpg')
     N_test_img = 200
 
-    # image_array = np.empty(shape=(N_test_img, 480, 640, 3), dtype=np.uint8)
+    image_array = np.empty(shape=(N_test_img, 480, 640, 3), dtype=np.uint8)
 
     iou_of_boxes = []
+    true_boxes = []
+    pred_boxes = []
 
     for n in range(N_test_img):
-        img_idx = n+200
+        img_idx = n
         # load image
         image = validation_generator.load_image(img_idx)
         annotation_true = validation_generator.load_annotations(img_idx)
 
         if annotation_true['bboxes'].size == 0:
-            # if there is no drone, than bbox is zero for zero overlap
-            annotation_true['bboxes'] = np.array([0, 0, 0, 0])
-
+            continue  # skip images where there is no drone
 
         # copy to draw on
         draw = image.copy()
-    #     draw = cv2.cvtColor(draw, cv2.COLOR_BGR2RGB)
 
         # preprocess image for network
         image = preprocess_image(image)
         image, scale = resize_image(image)
 
-        # rescale true annotations
-        annotation_true['bboxes'] /= scale
+        # rescale true annotations --- not needed here
+#         annotation_true['bboxes'] /= scale
 
         # process image
         start = time.time()
@@ -96,36 +95,39 @@ def mean_iou(model_test, validation_generator, labels_to_names):
         # correct for image scale
         boxes /= scale
 
-        draw_box(draw, box_int, color=color)
+#         draw_box(draw, box_int, color=color)
 
         # visualize detections
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
             #     for box, score in zip(boxes[0], scores[0]):
+
             # scores are sorted so we can break
             if score < 0.5:
                 break
 
-            color = label_color(label)
-
-            box_int = box.astype(int)
+            color_pred = label_color(label)
+            color_true = label_color(label+1)
 
             iou_of_boxes.append(
-                iou(annotation_true['bboxes'], box_int)
+                iou(annotation_true['bboxes'][0], box)
             )
+            true_boxes.append(annotation_true['bboxes'][0])
+            pred_boxes.append(box)
 
-
-            # draw_box(draw, box_int, color=color)  # predicted box
+            draw_box(draw, box.astype(int), color=color_pred)  # predicted box
+            draw_box(draw, annotation_true['bboxes']
+                     [0], color=color_true)  # predicted box
 
     #         draw_box(draw, b, color=1)
 
             # caption = "{} {:.3f}".format(labels_to_names[label], score)
             # draw_caption(draw, box_int, caption)
 
-        # image_array[n, :, :, :] = draw
+        image_array[n, :, :, :] = draw
     #         plt.figure(figsize=(10, 10))
     #         plt.axis('off')
     #         plt.imshow(draw)
     #         plt.show()
 
     iou_of_boxes = np.array(iou_of_boxes)
-    return iou_of_boxes
+    return iou_of_boxes, true_boxes, pred_boxes, image_array
