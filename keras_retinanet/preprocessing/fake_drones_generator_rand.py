@@ -120,12 +120,12 @@ def random_insert(img, subimg, size_range, angle_range):
 
 def resize_img_and_bbox(img, bbox, shape):
 
-    bbox[0] = int(shape[1] * bbox[0] / img.shape[1])
-    bbox[1] = int(shape[0] * bbox[1] / img.shape[0])
-    bbox[2] = int(shape[1] * bbox[2] / img.shape[1])
-    bbox[3] = int(shape[0] * bbox[3] / img.shape[0])
+    bbox[0] = int( shape[1] * bbox[0] / img.shape[1] ) # x
+    bbox[1] = int( shape[0] * bbox[1] / img.shape[0] ) # y
+    bbox[2] = int( shape[1] * bbox[2] / img.shape[1] ) # w
+    bbox[3] = int( shape[0] * bbox[3] / img.shape[0] ) # h
 
-    return cv2.resize(img, (shape[0], shape[1]) ), bbox
+    return cv2.resize(img, (shape[1], shape[0]) ), bbox
 
 
 # =============================== The generator ==============================
@@ -144,7 +144,7 @@ class Drones_Cut_Paste_Generator(Generator):
         bgr_imgs, drone_imgs,
         bgr_indexes, drone_indexes,
         batch_size, batches_per_epoch,
-        image_shape = (224, 224,3),
+        image_shape = (224, 224, 3),
         drone_size_range = (0.4, 0.6),
         drone_rotation_range = (-45, 45),
         **kwargs # pass to parent class
