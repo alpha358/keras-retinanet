@@ -272,7 +272,7 @@ class Drones_Cut_Paste_Generator(Generator):
             fake_img[:,:,0] = gray
             fake_img[:,:,1] = gray
             fake_img[:,:,2] = gray
-            fake_img /= np.max(fake_img) * 255
+            fake_img = fake_img / np.max(fake_img) * 255
             fake_img = np.asarray(fake_img, np.uint8)
 
             # fake_img = np.assaray(np.mean(fake_img, axis=2)
