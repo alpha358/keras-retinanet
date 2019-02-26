@@ -147,6 +147,7 @@ class Drones_Cut_Paste_Generator(Generator):
         image_shape = (224, 224, 3),
         drone_size_range = (0.4, 0.6),
         drone_rotation_range = (-45, 45),
+        grayscale = False,
         **kwargs # pass to parent class
         # kwargs = None # may need something to pass to parent class
     ):
@@ -164,7 +165,7 @@ class Drones_Cut_Paste_Generator(Generator):
         self.drone_indexes = drone_indexes
         self.batch_size = batch_size
         self.batches_per_epoch = batches_per_epoch
-
+        self.grayscale = grayscale
 
         # augmentation parameters
         self.drone_size_range = drone_size_range
@@ -265,6 +266,16 @@ class Drones_Cut_Paste_Generator(Generator):
                                 self.drone_rotation_range)
 
         fake_img, bbox = resize_img_and_bbox(fake_img, bbox, self.image_shape)
+
+        if self.grayscale:
+            gray = cv2.cvtColor(fake_img, cv2.COLOR_RGB2GRAY) # TODO: may need GBR2GRAY
+            fake_img[:,:,0] = gray
+            fake_img[:,:,1] = gray
+            fake_img[:,:,2] = gray
+            fake_img /= np.max(fake_img) * 255
+            fake_img = np.asarray(fake_img, np.uint8)
+
+            # fake_img = np.assaray(np.mean(fake_img, axis=2)
 
         self.bboxes[image_index] = bbox
 
