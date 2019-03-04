@@ -95,7 +95,7 @@ def get_detections(model_test,
         image = validation_generator.load_image(img_idx)
         annotation_true = validation_generator.load_annotations(img_idx)
 
-        drone_exist_in_img = annotation_true['bboxes'].size == 0
+        drone_exist_in_img = annotation_true['bboxes'].size > 0
         if drone_exist_in_img:
             # If drone exist in the frame
             true_boxes[img_idx].append(annotation_true['bboxes'][0])
