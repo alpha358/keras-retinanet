@@ -11,6 +11,9 @@ from keras_retinanet.utils.colors import label_color
 import time
 import tqdm
 
+from collections import defaultdict
+
+
 def iou(box1, box2):
     '''
     Box format is: x1,y1,x2,y2 :thinking:
@@ -55,10 +58,13 @@ def estimate_mean_iou(model, generator, n_batches):
 
 
 def mean_iou(model_test,
-                validation_generator,
-                labels_to_names,
-                N_img = None,
-                boxes_plots=False, ):
+             validation_generator,
+             labels_to_names,
+             N_img = None,
+             boxes_plots=False,
+             p_threshold = 0.5,
+             iou_threshold = 0.5
+             ):
     '''
     '''
 
@@ -69,9 +75,9 @@ def mean_iou(model_test,
     if boxes_plots:
         image_array = np.empty(shape=(N_img, 480, 640, 3), dtype=np.uint8)
 
-    iou_of_boxes = []
-    true_boxes = []
-    pred_boxes = []
+    iou_of_boxes = defaultdict([])
+    true_boxes = defaultdict([])
+    pred_boxes = defaultdict([])
 
     for n in tqdm.tqdm(range(N_img)):
         img_idx = n
@@ -104,22 +110,28 @@ def mean_iou(model_test,
 
 #         draw_box(draw, box_int, color=color)
 
+        y_predicted = [] # does drone exist with iou > iou_threshold
+        y_true = [] # does drone bbox exist
+
         # visualize detections
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
             #     for box, score in zip(boxes[0], scores[0]):
 
             # scores are sorted so we can break
-            if score < 0.5:
+            if score < p_threshold:
                 break
 
             color_pred = label_color(label)
             color_true = label_color(label+1)
 
-            iou_of_boxes.append(
-                iou(annotation_true['bboxes'][0], box)
-            )
-            true_boxes.append(annotation_true['bboxes'][0])
-            pred_boxes.append(box)
+            iou_ = iou(annotation_true['bboxes'][0], box)
+            iou_of_boxes[img_idx].append(iou_)
+
+            # TODO: accuracy
+            # detection --- at least one bbox detects the drone with p_thresh, iou_threshold
+
+            true_boxes[img_idx].append(annotation_true['bboxes'][0])
+            pred_boxes[img_idx].append(box)
 
 
         if boxes_plots:
@@ -131,7 +143,7 @@ def mean_iou(model_test,
             image_array[n, :, :, :] = draw
 
 
-    iou_of_boxes = np.array(iou_of_boxes)
+    # iou_of_boxes = np.array(iou_of_boxes)
 
     if boxes_plots:
         return iou_of_boxes, true_boxes, pred_boxes, image_array
