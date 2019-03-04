@@ -95,8 +95,12 @@ def get_detections(model_test,
         image = validation_generator.load_image(img_idx)
         annotation_true = validation_generator.load_annotations(img_idx)
 
-        if annotation_true['bboxes'].size == 0:
-            continue  # skip images where there is no drone
+        drone_exist_in_img = annotation_true['bboxes'].size == 0
+        if drone_exist_in_img:
+            # If drone exist in the frame
+            true_boxes[img_idx].append(annotation_true['bboxes'][0])
+        else:
+            true_boxes[img_idx].append(None)
 
         # copy to draw on
         draw = image.copy()
@@ -120,10 +124,11 @@ def get_detections(model_test,
 
 #         draw_box(draw, box_int, color=color)
 
-        y_predicted = [] # does drone exist with iou > iou_threshold
-        y_true = [] # does drone bbox exist
+        # y_predicted = [] # does drone exist with iou > iou_threshold
+        # y_true = [] # does drone bbox exist
 
-        # visualize detections
+
+        # visualize network detections
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
             #     for box, score in zip(boxes[0], scores[0]):
 
@@ -134,13 +139,16 @@ def get_detections(model_test,
             color_pred = label_color(label)
             color_true = label_color(label+1)
 
-            iou_ = iou(annotation_true['bboxes'][0], box)
+            if drone_exist_in_img:
+                iou_ = iou(annotation_true['bboxes'][0], box)
+            else:
+                iou_ = None
+
             iou_of_boxes[img_idx].append(iou_)
 
             # TODO: accuracy
             # detection --- at least one bbox detects the drone with p_thresh, iou_threshold
 
-            true_boxes[img_idx].append(annotation_true['bboxes'][0])
             pred_boxes[img_idx].append(box)
 
 
@@ -148,7 +156,9 @@ def get_detections(model_test,
             draw_box(draw, box.astype(int), color=color_pred)  # predicted box
             caption = "{} {:.3f}".format(labels_to_names[label], score)
             draw_caption(draw, box.astype(int), caption)
-            draw_box(draw, annotation_true['bboxes'][0], color=color_true)  # predicted box
+
+            if drone_exist_in_img:
+                draw_box(draw, annotation_true['bboxes'][0], color=color_true)  # predicted box
 
             image_array[n, :, :, :] = draw
 
