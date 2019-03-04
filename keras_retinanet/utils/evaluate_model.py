@@ -10,6 +10,8 @@ from keras_retinanet.utils.visualization import draw_box, draw_caption
 from keras_retinanet.utils.colors import label_color
 import time
 import tqdm
+import cv2
+import os
 
 from collections import defaultdict
 
@@ -63,10 +65,17 @@ def mean_iou(model_test,
              N_img = None,
              boxes_plots=False,
              p_threshold = 0.5,
-             iou_threshold = 0.5
+             iou_threshold = 0.5,
+             savedir = 'detections'
              ):
     '''
     '''
+
+    try:
+        os.mkdir(savedir)
+    except:
+        pass
+
 
     if N_img == None:
         # test all images in generator if not stated othervise
@@ -141,6 +150,8 @@ def mean_iou(model_test,
             draw_box(draw, annotation_true['bboxes'][0], color=color_true)  # predicted box
 
             image_array[n, :, :, :] = draw
+
+            cv2.imwrite(os.path.join(savedir, str(n)+'.jpg'))
 
 
     # iou_of_boxes = np.array(iou_of_boxes)
