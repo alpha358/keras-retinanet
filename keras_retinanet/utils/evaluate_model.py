@@ -85,9 +85,9 @@ def get_detections(model_test,
     if boxes_plots:
         image_array = np.empty(shape=(N_img, 480, 640, 3), dtype=np.uint8)
 
-    iou_of_boxes = defaultdict([])
-    true_boxes = defaultdict([])
-    pred_boxes = defaultdict([])
+    iou_of_boxes = defaultdict(list)
+    true_boxes = defaultdict(list)
+    pred_boxes = defaultdict(list)
 
     for n in tqdm.tqdm(range(N_img)):
         img_idx = n
