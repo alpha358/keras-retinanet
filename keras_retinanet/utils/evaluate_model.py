@@ -59,7 +59,7 @@ def estimate_mean_iou(model, generator, n_batches):
     return mean_iou / n
 
 
-def mean_iou(model_test,
+def get_detections(model_test,
              validation_generator,
              labels_to_names,
              N_img = None,
@@ -71,6 +71,7 @@ def mean_iou(model_test,
     '''
     '''
 
+    # try to make directory for detections
     try:
         os.mkdir(savedir)
     except:
@@ -151,7 +152,7 @@ def mean_iou(model_test,
 
             image_array[n, :, :, :] = draw
 
-            cv2.imwrite(os.path.join(savedir, str(n)+'.jpg'))
+            cv2.imwrite(os.path.join(savedir, str(n) + '.jpg'))
 
 
     # iou_of_boxes = np.array(iou_of_boxes)
