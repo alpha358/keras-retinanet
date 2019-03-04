@@ -89,7 +89,7 @@ def get_detections(model_test,
     true_boxes = defaultdict(list)
     pred_boxes = defaultdict(list)
 
-    for n in tqdm.tqdm(range(N_img)):
+    for n in tqdm.tqdm( range(N_img) ):
         img_idx = n
         # load image
         image = validation_generator.load_image(img_idx)
@@ -98,9 +98,7 @@ def get_detections(model_test,
         drone_exist_in_img = annotation_true['bboxes'].size > 0
         if drone_exist_in_img:
             # If drone exist in the frame
-            true_boxes[img_idx].append(annotation_true['bboxes'][0])
-        else:
-            true_boxes[img_idx].append(None)
+            true_boxes[img_idx].append( annotation_true['bboxes'][0] )
 
         # copy to draw on
         draw = image.copy()
@@ -133,8 +131,9 @@ def get_detections(model_test,
             #     for box, score in zip(boxes[0], scores[0]):
 
             # scores are sorted so we can break
-            if score < p_threshold:
-                break
+
+            if score < p_threshold:  # TODO: return all bboxes, filter later
+                break  # use only for drawing
 
             color_pred = label_color(label)
             color_true = label_color(label+1)
