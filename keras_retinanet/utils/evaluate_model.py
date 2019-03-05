@@ -130,7 +130,7 @@ def plot_confusion_matrix(y_true, y_pred, classes,
 def get_detections(
             model_test,
             validation_generator,
-            labels_to_names,
+            labels_to_names,  # {0: 'drone'}
             N_img = None,
             save_plots = False,
             savedir = 'detections',
@@ -165,7 +165,6 @@ def get_detections(
         # test all images in generator if not stated othervise
         N_img = validation_generator.size()
 
-    # if boxes_plots:
     if get_img_array:
         image_array = np.empty(shape=(N_img, 480, 640, 3), dtype=np.uint8)
 
@@ -233,7 +232,7 @@ def get_detections(
             pred_boxes[img_idx].append(box)
 
         # ---------------------------- plots bboxes on img --------------------------- #
-        if boxes_plots:
+        if save_plots or get_img_arrays:
             draw_box(draw, box.astype(int), color=color_pred)  # predicted box
             caption = "{} {:.3f}".format(labels_to_names[label], score)
             draw_caption(draw, box.astype(int), caption)
@@ -244,12 +243,13 @@ def get_detections(
             if get_img_array:
                 image_array[n, :, :, :] = draw
 
-            cv2.imwrite(draw, os.path.join(savedir, str(n) + '.jpg'))
+            if save_plots:
+                cv2.imwrite(draw, os.path.join(savedir, str(n) + '.jpg'))
 
 
     # iou_of_boxes = np.array(iou_of_boxes)
 
-    if boxes_plots:
+    if get_img_arrays:
         return iou_of_boxes, true_boxes, pred_boxes, probs_of_boxes, image_array
     else:
         return iou_of_boxes, true_boxes, pred_boxes, probs_of_boxes
