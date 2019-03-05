@@ -18,6 +18,7 @@ import cv2
 import os
 from collections import defaultdict
 from sklearn.metrics import confusion_matrix
+from sklearn.utils.multiclass import unique_labels
 import matplotlib.pyplot as plt
 
 
@@ -304,8 +305,7 @@ def get_prediction_vectors(
     '''
     def arr(x): return np.array(x)
 
-
-    for idx in range(generator.size()):
+    for idx in range(N_examples):
         # iterating over images
 
         # logical vars
