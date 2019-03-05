@@ -223,7 +223,7 @@ def get_detections(
             if drone_exist_in_img:
                 iou_ = iou(annotation_true['bboxes'][0], box)
             else:
-                iou_ = None
+                iou_ = 0 # zero IoU if there is no drone
 
             iou_of_boxes[img_idx].append(iou_)
 
