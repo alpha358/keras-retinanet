@@ -232,7 +232,7 @@ def get_detections(
             pred_boxes[img_idx].append(box)
 
         # ---------------------------- plots bboxes on img --------------------------- #
-        if save_plots or get_img_arrays:
+        if save_plots or get_img_array:
             draw_box(draw, box.astype(int), color=color_pred)  # predicted box
             caption = "{} {:.3f}".format(labels_to_names[label], score)
             draw_caption(draw, box.astype(int), caption)
@@ -249,7 +249,7 @@ def get_detections(
 
     # iou_of_boxes = np.array(iou_of_boxes)
 
-    if get_img_arrays:
+    if get_img_array:
         return iou_of_boxes, true_boxes, pred_boxes, probs_of_boxes, image_array
     else:
         return iou_of_boxes, true_boxes, pred_boxes, probs_of_boxes
