@@ -275,7 +275,7 @@ def get_detections(
                     image_array[n, :, :, :] = draw
 
                 if save_plots:
-                    cv2.imwrite(draw, os.path.join(savedir, str(n) + '.jpg'))
+                    cv2.imwrite(os.path.join(savedir, str(n) + '.jpg'), draw)
 
 
     # iou_of_boxes = np.array(iou_of_boxes)
