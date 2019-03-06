@@ -491,7 +491,7 @@ def detector_one_sheet(
     plt.show()
 
     plt.hist(iou_of_confident_detections)
-    plt.title('$Mean IoU = %2.2f' %
+    plt.title('Mean IoU = %2.2f' %
               np.mean(iou_of_confident_detections))
     plt.show()
 
@@ -500,7 +500,7 @@ def detector_one_sheet(
     plt.figure(figsize=(10,4))
     plt.scatter(img_idx, y_true, marker='_',
                 alpha=0.1, color='b', label='y_true')
-    plt.scatter(img_idx, y_pred*0.99, marker='_',
+    plt.scatter(img_idx, np.array(y_pred)*0.99, marker='_',
                 alpha=0.1, color='r', label='y_pred')
     plt.legend()
     plt.title('P_optimal = %2.3f' % p_optimal)
