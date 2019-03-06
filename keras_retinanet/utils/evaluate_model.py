@@ -1,3 +1,4 @@
+from sklearn.metrics import accuracy_score
 '''
 Purpose:
     Compute model mean IOU
@@ -20,6 +21,30 @@ from collections import defaultdict
 from sklearn.metrics import confusion_matrix
 from sklearn.utils.multiclass import unique_labels
 import matplotlib.pyplot as plt
+
+
+
+# ============================================================================ #
+#                                SHOW DETECTIONS                               #
+# ============================================================================ #
+
+from matplotlib import animation
+from JSAnimation import IPython_display
+
+def plot_movie_js(image_array):
+    dpi = 75.0
+    xpixels, ypixels = image_array[0].shape[0], image_array[0].shape[1]
+    fig = plt.figure(figsize=(ypixels/dpi, xpixels/dpi), dpi=dpi)
+
+#     fig = plt.figure(figsize=(12, 12), dpi=45)
+    im = plt.figimage(image_array[0])
+
+    def animate(i):
+        im.set_array(image_array[i])
+        return (im,)
+
+    anim = animation.FuncAnimation(fig, animate, frames=len(image_array))
+    display(IPython_display.display_animation(anim))
 
 
 # ============================================================================ #
@@ -341,7 +366,103 @@ def get_prediction_vectors(
     return y_gt, y_hat
 
 
+# ============================================================================ #
+#                                    GET IOU                                   #
+# ============================================================================ #
+def get_iou(
+        pred_boxes,
+        true_boxes,
+        probs_of_boxes,
+        iou_of_boxes,
+        iou_thresh = 0.5,
+        p_thresh = 0.5
+    ):
+    '''
+    Purpose: get IoU vector of proper detections
+    '''
+
+    return None
+
 
 # ============================================================================ #
-#                         ACCURACY AND CONFUSION MATRIX                        #
+#             DETECTOR ONE-SHEET: MAX ACCURACY AND CONFUSION MATRIX            #
 # ============================================================================ #
+def detector_one_sheet(
+    model, # testing model
+    generator,
+    labels_to_names,
+    save_detection_images = False,
+    detection_img_dir = './detections',
+    N_img = None, # None means all images from generator
+    lang = 'en' # plots language
+    ):
+
+    # Get detections for images given by generator
+    iou_of_boxes, \
+    true_boxes, \
+    pred_boxes, \
+    probs_of_boxes = get_detections(
+        model,
+        generator,
+        labels_to_names,
+        save_plots = save_detection_images,
+        get_img_array = False,
+        N_img = N_img,
+        savedir = detection_img_dir
+    )
+
+    # ------------------------- Vary probability treshold ------------------------ #
+    # probs_ = np.array(list(probs_of_boxes.values())).reshape(-1)
+    # probs = np.sort(probs_[probs_ > 0])
+
+
+    # a function for shorter code
+    def prediction_vectors(prob_thresh):
+        return get_prediction_vectors(
+            pred_boxes,
+            true_boxes,
+            probs_of_boxes,
+            iou_of_boxes,
+            N_img,
+            drone_anywhere=False,
+            iou_thresh=0.5,
+            prob_thresh=prob_thresh
+        )
+
+
+    p_thresholds = np.linspace(0.0, 1, 500)
+    acc = []
+    for prob_thresh in p_thresholds:
+        # Get detection vectors y_true, y_pred:
+        #   y_true --- ground truth, object exist in the image ?
+        #   y_pred --- is object detected with given iou_threshold and p_threshold  ?
+        y_true, y_pred = prediction_vectors(prob_thresh)
+
+        acc.append( accuracy_score(y_true, y_pred) )
+
+    acc = np.array(acc)
+    # ------------------------------------- - ------------------------------------ #
+    plots_words['lt']['prob_threshold'] = 'tikimybės riba'
+    plots_words['en']['prob_threshold'] = 'probability threshold'
+    plots_words['en']['acc'] = 'accuracy'
+    plots_words['lt']['acc'] = 'tikslumas'
+
+
+    # Plot prob. treshold curve
+    plt.plot(p_thresholds*100, acc*100)
+    plt.xlabel(plots_words[lang]['prob_threshold'])
+    plt.ylabel(plots_words[lang]['acc'])
+    plt.savefig('acc_vs_prob_threshold.png')
+    plt.show()
+
+
+    # Optimal prob. threshold
+    idx_max_acc = np.argmax(acc)
+    p_optimal = p_thresholds[idx_max_acc]
+
+    y_true, y_pred = prediction_vectors(p_optimal)
+
+    plot_confusion_matrix(y_true, y_pred, np.array(
+        ['No Drone', 'Drone']), normalize=True)
+    plt.savefig('optimal_confusion.png')
+    plt.show()
