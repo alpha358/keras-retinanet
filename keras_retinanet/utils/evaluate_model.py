@@ -342,6 +342,8 @@ def get_prediction_vectors(
         drone_exist = len(true_boxes[idx]) > 0
         detections_exist = len(pred_boxes[idx]) > 0
 
+        iou_of_confident_detections = [] # todo: may need to change to default dict
+
         # --------------- logic of detection ---------------- #
         if drone_exist:
             y_gt.append(1)
@@ -350,6 +352,17 @@ def get_prediction_vectors(
                 confident_predictions = arr(probs_of_boxes[idx]) > prob_thresh
                 good_iou_detections = arr(iou_of_boxes[idx]) > iou_thresh
 
+                # IoU of confident predictions
+                #   --- all predictions satisfying prob_thresh
+                box_idx = 0
+                for confident in confident_predictions:
+                    if confident:
+                        iou_of_confident_detections.append(
+                            iou_of_boxes[idx][box_idx]
+                        )
+                    box_idx += 1 # next box
+
+                # Compute prediction vector
                 if drone_anywhere:
                     # there is any detection with high prob
                     y_hat.append(int(np.any(confident_predictions)))
@@ -368,7 +381,7 @@ def get_prediction_vectors(
                 # no need to check IoU for failed detections
                 y_hat.append(int(np.any(confident_predictions)))
 
-    return y_gt, y_hat
+    return y_gt, y_hat, arr(iou_of_confident_detections)
 
 
 # ============================================================================ #
@@ -441,7 +454,7 @@ def detector_one_sheet(
         # Get detection vectors y_true, y_pred:
         #   y_true --- ground truth, object exist in the image ?
         #   y_pred --- is object detected with given iou_threshold and p_threshold  ?
-        y_true, y_pred = prediction_vectors(prob_thresh)
+        y_true, y_pred, iou_of_confident_detections = prediction_vectors(prob_thresh)
 
         acc.append( accuracy_score(y_true, y_pred) )
 
@@ -452,15 +465,15 @@ def detector_one_sheet(
     idx_max_acc = np.argmax(acc)
     p_optimal = p_thresholds[idx_max_acc]
 
-    y_true, y_pred = prediction_vectors(p_optimal)
+    y_true, y_pred, iou_of_confident_detections = prediction_vectors(p_optimal)
 
 
     # ----------------------------------- Plots ---------------------------------- #
     plots_words = Vividict() # just a nested dict
-    plots_words['lt']['prob_threshold'] = 'tikimybės riba'
-    plots_words['en']['prob_threshold'] = 'probability threshold'
-    plots_words['en']['acc'] = 'accuracy'
-    plots_words['lt']['acc'] = 'tikslumas'
+    plots_words['lt']['prob_threshold'] = 'tikimybės riba, %'
+    plots_words['en']['prob_threshold'] = 'probability threshold, %'
+    plots_words['en']['acc'] = 'accuracy, %'
+    plots_words['lt']['acc'] = 'tikslumas, %'
 
 
     # Plot prob. treshold curve
@@ -468,7 +481,7 @@ def detector_one_sheet(
     plt.plot(p_thresholds*100, acc*100)
     plt.xlabel(plots_words[lang]['prob_threshold'])
     plt.ylabel(plots_words[lang]['acc'])
-    plt.title('P_optimal = %f2.3' % p_optimal)
+    plt.title('P_optimal = %2.3f' % p_optimal)
     plt.savefig('acc_vs_prob_threshold.png')
     plt.show()
 
@@ -481,7 +494,7 @@ def detector_one_sheet(
     plt.scatter(img_idx, y_pred, marker='.',
                 alpha=0.1, color='r', label='y_pred')
     plt.legend()
-    plt.title('P_optimal = %f2.3' % p_optimal)
+    plt.title('P_optimal = %2.3f' % p_optimal)
     plt.savefig('detections.png')
     plt.show()
 
@@ -490,12 +503,12 @@ def detector_one_sheet(
     plt.subplot(1,2,1)
     plot_confusion_matrix(y_true, y_pred, np.array(
         ['No Drone', 'Drone']), normalize=True)
-    plt.title('P_optimal = %f2.3' % p_optimal)
+    plt.title('P_optimal = %2.3f' % p_optimal)
 
     plt.subplot(1,2,2)
     plot_confusion_matrix(y_true, y_pred, np.array(
         ['No Drone', 'Drone']), normalize=False)
 
-    plt.title('P_optimal = %f2.3' % p_optimal)
+    plt.title('P_optimal = %2.3f' % p_optimal)
     plt.savefig('optimal_confusion.png')
     plt.show()
