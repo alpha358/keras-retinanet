@@ -320,6 +320,7 @@ def get_prediction_vectors(
     Output:
         y_gt  --- ground truth
         y_hat --- predicted drone detections
+        iou_of_confident_detections --- iou for bboxes where  p > p_thresh
 
     Warning: not tested for the case of many drones in the image.
     '''
