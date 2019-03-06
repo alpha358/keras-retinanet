@@ -397,6 +397,10 @@ def get_prediction_vectors(
                             confident_predictions * good_iou_detections > 0
                         ))
                     )
+            else:
+                # no detections, drone exist
+                y_full_gt.append(1)
+                y_full_hat.append(0)
 
         else:  # drone does not exist
             y_gt.append(0)
@@ -414,6 +418,12 @@ def get_prediction_vectors(
 
                 # no need to check IoU for failed detections
                 y_hat.append(int(np.any(confident_predictions)))
+            else:
+                # no detections
+                y_hat.append(0)
+                y_full_gt.append(0)
+                y_full_hat.append(0)
+
 
     return y_gt, y_hat, y_full_gt, y_full_hat, arr(iou_of_confident_detections)
 
@@ -545,12 +555,12 @@ def detector_one_sheet(
 
     # ------------------------- ---- Confusion matrix --- ------------------------ #
     # plt.subplot(1,2,1)
-    plot_confusion_matrix(y_true, y_pred, np.array(
+    plot_confusion_matrix(y_full_true, y_full_pred, np.array(
         ['No Drone', 'Drone']), normalize=True)
     plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
 
     # plt.subplot(1,2,2)
-    plot_confusion_matrix(y_true, y_pred, np.array(
+    plot_confusion_matrix(y_full_true, y_full_pred, np.array(
         ['No Drone', 'Drone']), normalize=False)
 
     plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
