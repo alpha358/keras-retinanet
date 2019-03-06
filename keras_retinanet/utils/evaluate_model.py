@@ -482,9 +482,13 @@ def detector_one_sheet(
     plt.xlabel(plots_words[lang]['prob_threshold'])
     plt.ylabel(plots_words[lang]['acc'])
     plt.title('P_optimal = %2.3f' % p_optimal)
-    plt.savefig('acc_vs_prob_threshold.png')
+    # plt.savefig('acc_vs_prob_threshold.png')
     plt.show()
 
+    plt.hist(iou_of_confident_detections)
+    plt.title('\langle IoU \rangle = %2.2f' %
+              np.mean(iou_of_confident_detections))
+    plt.show()
 
     # Predictions at frames
     img_idx = list(range(len(y_pred)))
@@ -495,7 +499,7 @@ def detector_one_sheet(
                 alpha=0.1, color='r', label='y_pred')
     plt.legend()
     plt.title('P_optimal = %2.3f' % p_optimal)
-    plt.savefig('detections.png')
+    # plt.savefig('detections.png')
     plt.show()
 
 
@@ -510,5 +514,5 @@ def detector_one_sheet(
         ['No Drone', 'Drone']), normalize=False)
 
     plt.title('P_optimal = %2.3f' % p_optimal)
-    plt.savefig('optimal_confusion.png')
+    # plt.savefig('optimal_confusion.png')
     plt.show()
