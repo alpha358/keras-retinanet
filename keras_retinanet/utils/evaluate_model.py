@@ -118,13 +118,13 @@ def plot_confusion_matrix(y_true, y_pred, classes,
     cm = confusion_matrix(y_true, y_pred)
     # Only use the labels that appear in the data
     classes = classes[unique_labels(y_true, y_pred)]
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
-    else:
-        print('Confusion matrix, without normalization')
+    # if normalize:
+    #     cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    #     print("Normalized confusion matrix")
+    # else:
+    #     print('Confusion matrix, without normalization')
 
-    print(cm)
+    # print(cm)
 
     fig, ax = plt.subplots()
     im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
@@ -468,16 +468,20 @@ def detector_one_sheet(
     plt.plot(p_thresholds*100, acc*100)
     plt.xlabel(plots_words[lang]['prob_threshold'])
     plt.ylabel(plots_words[lang]['acc'])
-    plt.title('P_optimal = f2.3' % p_optimal)
+    plt.title('P_optimal = %f2.3' % p_optimal)
     plt.savefig('acc_vs_prob_threshold.png')
     plt.show()
 
 
+    # Predictions at frames
     img_idx = list(range(len(y_pred)))
-    plt.scatter(img_idx, y_true, marker='.', alpha=0.1, color='b')
-    plt.scatter(img_idx, y_pred, marker='.', alpha=0.1, color='r')
-    plt.legend('y_true', 'y_pred')
-    plt.title('P_optimal = f2.3' % p_optimal)
+
+    plt.scatter(img_idx, y_true, marker='.',
+                alpha=0.1, color='b', label='y_true')
+    plt.scatter(img_idx, y_pred, marker='.',
+                alpha=0.1, color='r', label='y_pred')
+    plt.legend()
+    plt.title('P_optimal = %f2.3' % p_optimal)
     plt.savefig('detections.png')
     plt.show()
 
@@ -485,6 +489,6 @@ def detector_one_sheet(
 
     plot_confusion_matrix(y_true, y_pred, np.array(
         ['No Drone', 'Drone']), normalize=True)
-    plt.title('P_optimal = f2.3' % p_optimal)
+    plt.title('P_optimal = %f2.3' % p_optimal)
     plt.savefig('optimal_confusion.png')
     plt.show()
