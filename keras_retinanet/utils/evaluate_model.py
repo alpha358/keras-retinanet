@@ -219,7 +219,8 @@ def get_detections(
             true_boxes[img_idx].append( annotation_true['bboxes'][0] )
 
         # copy to draw on
-        draw = cv2.cvtColor(image.copy(), cv2.COLOR_BGR2RGB)  # convert colors back
+        # draw = cv2.cvtColor(image.copy(), cv2.COLOR_BGR2RGB)  # convert colors back --- not needed now
+        draw = image.copy()
 
         # preprocess image for network
         image = preprocess_image(image)
