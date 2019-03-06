@@ -262,20 +262,20 @@ def get_detections(
 
             pred_boxes[img_idx].append(box)
 
-        # ---------------------------- plots bboxes on img --------------------------- #
-        if save_plots or get_img_array:
-            draw_box(draw, box.astype(int), color=color_pred)  # predicted box
-            caption = "{} {:.3f}".format(labels_to_names[label], score)
-            draw_caption(draw, box.astype(int), caption)
+            # ---------------------------- plots bboxes on img --------------------------- #
+            if save_plots or get_img_array:
+                draw_box(draw, box.astype(int), color=color_pred)  # predicted box
+                caption = "{} {:.3f}".format(labels_to_names[label], score)
+                draw_caption(draw, box.astype(int), caption)
 
-            if drone_exist_in_img:
-                draw_box(draw, annotation_true['bboxes'][0], color=color_true)  # predicted box
+                if drone_exist_in_img:
+                    draw_box(draw, annotation_true['bboxes'][0], color=color_true)  # predicted box
 
-            if get_img_array:
-                image_array[n, :, :, :] = draw
+                if get_img_array:
+                    image_array[n, :, :, :] = draw
 
-            if save_plots:
-                cv2.imwrite(draw, os.path.join(savedir, str(n) + '.jpg'))
+                if save_plots:
+                    cv2.imwrite(draw, os.path.join(savedir, str(n) + '.jpg'))
 
 
     # iou_of_boxes = np.array(iou_of_boxes)
