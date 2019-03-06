@@ -357,7 +357,9 @@ def get_prediction_vectors(
                 # IoU of confident predictions
                 #   --- all predictions satisfying prob_thresh
                 box_idx = 0
+
                 for confident in confident_predictions:
+                    import ipdb; ipdb.set_trace()  # debugging starts here
                     if confident:
                         iou_of_confident_detections.append(
                             iou_of_boxes[idx][box_idx]
@@ -488,7 +490,7 @@ def detector_one_sheet(
     plt.show()
 
     plt.hist(iou_of_confident_detections)
-    plt.title('\langle IoU \rangle = %2.2f' %
+    plt.title('$\langle IoU \rangle$ = %2.2f' %
               np.mean(iou_of_confident_detections))
     plt.show()
 
