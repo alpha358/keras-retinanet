@@ -408,7 +408,6 @@ def get_prediction_vectors(
                 # -------------------------------------------------------------
                 for confident in confident_predictions:
                     if confident:
-                        # if confident and if iou is good enough
                         y_full_gt.append(0)
                         y_full_hat.append(1)
                 # -------------------------------------------------------------
