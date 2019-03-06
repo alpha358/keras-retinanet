@@ -359,7 +359,6 @@ def get_prediction_vectors(
                 box_idx = 0
 
                 for confident in confident_predictions:
-                    import ipdb; ipdb.set_trace()  # debugging starts here
                     if confident:
                         iou_of_confident_detections.append(
                             iou_of_boxes[idx][box_idx]
@@ -470,6 +469,8 @@ def detector_one_sheet(
     p_optimal = p_thresholds[idx_max_acc]
 
     y_true, y_pred, iou_of_confident_detections = prediction_vectors(p_optimal)
+    import ipdb
+    ipdb.set_trace()  # debugging starts here
 
 
     # ----------------------------------- Plots ---------------------------------- #
@@ -497,9 +498,9 @@ def detector_one_sheet(
     # Predictions at frames
     img_idx = list(range(len(y_pred)))
     plt.figure(figsize=(10,4))
-    plt.scatter(img_idx, y_true, marker='.',
+    plt.scatter(img_idx, y_true, marker='$=$',
                 alpha=0.1, color='b', label='y_true')
-    plt.scatter(img_idx, y_pred, marker='.',
+    plt.scatter(img_idx, y_pred, marker='$-$',
                 alpha=0.1, color='r', label='y_pred')
     plt.legend()
     plt.title('P_optimal = %2.3f' % p_optimal)
