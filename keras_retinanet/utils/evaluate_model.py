@@ -244,10 +244,9 @@ def get_detections(
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
             #     for box, score in zip(boxes[0], scores[0]):
 
-            if score < 0: # strange, but by design of original developers
-                # scores are sorted so we can break
-                break
-
+            # if score < 0: # strange, but by design of original developers
+            #     # scores are sorted so we can break
+            #     break
 
             probs_of_boxes[img_idx].append(score)
 
@@ -269,7 +268,7 @@ def get_detections(
             pred_boxes[img_idx].append(box)
 
             # ---------------------------- plots bboxes on img --------------------------- #
-            if save_plots or get_img_array:
+            if (save_plots or get_img_array) and label >= 0:
                 draw_box(draw, box.astype(int), color=color_pred)  # predicted box
                 caption = "{} {:.3f}".format(labels_to_names[label], score)
                 draw_caption(draw, box.astype(int), caption)
