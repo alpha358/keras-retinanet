@@ -469,8 +469,8 @@ def detector_one_sheet(
     p_optimal = p_thresholds[idx_max_acc]
 
     y_true, y_pred, iou_of_confident_detections = prediction_vectors(p_optimal)
-    import ipdb
-    ipdb.set_trace()  # debugging starts here
+    # import ipdb
+    # ipdb.set_trace()  # debugging starts here
 
 
     # ----------------------------------- Plots ---------------------------------- #
@@ -491,16 +491,16 @@ def detector_one_sheet(
     plt.show()
 
     plt.hist(iou_of_confident_detections)
-    plt.title('$\langle IoU \rangle$ = %2.2f' %
+    plt.title('$Mean IoU = %2.2f' %
               np.mean(iou_of_confident_detections))
     plt.show()
 
     # Predictions at frames
     img_idx = list(range(len(y_pred)))
     plt.figure(figsize=(10,4))
-    plt.scatter(img_idx, y_true, marker='$=$',
+    plt.scatter(img_idx, y_true, marker='_',
                 alpha=0.1, color='b', label='y_true')
-    plt.scatter(img_idx, y_pred, marker='$-$',
+    plt.scatter(img_idx, y_pred*0.99, marker='_',
                 alpha=0.1, color='r', label='y_pred')
     plt.legend()
     plt.title('P_optimal = %2.3f' % p_optimal)
