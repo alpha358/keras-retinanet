@@ -244,8 +244,13 @@ def get_detections(
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
             #     for box, score in zip(boxes[0], scores[0]):
 
-            # scores are sorted so we can break
+            if score < 0: # strange, but by design of original developers
+                # scores are sorted so we can break
+                break
+
+
             probs_of_boxes[img_idx].append(score)
+
 
 
             color_pred = label_color(label)
@@ -509,12 +514,12 @@ def detector_one_sheet(
 
 
     # ---- Confusion matrix ---
-    plt.subplot(1,2,1)
+    # plt.subplot(1,2,1)
     plot_confusion_matrix(y_true, y_pred, np.array(
         ['No Drone', 'Drone']), normalize=True)
     plt.title('P_optimal = %2.3f' % p_optimal)
 
-    plt.subplot(1,2,2)
+    # plt.subplot(1,2,2)
     plot_confusion_matrix(y_true, y_pred, np.array(
         ['No Drone', 'Drone']), normalize=False)
 
