@@ -491,6 +491,7 @@ def detector_one_sheet(
     plt.xlabel(plots_words[lang]['prob_threshold'])
     plt.ylabel(plots_words[lang]['acc'])
     plt.title('P_optimal = %2.3f' % p_optimal)
+    plt.grid(True)
     # plt.savefig('acc_vs_prob_threshold.png')
     plt.show()
 
@@ -503,9 +504,9 @@ def detector_one_sheet(
     img_idx = list(range(len(y_pred)))
     plt.figure(figsize=(10,4))
     plt.scatter(img_idx, y_true, marker='_',
-                alpha=0.1, color='b', label='y_true')
-    plt.scatter(img_idx, np.array(y_pred)*0.99, marker='_',
-                alpha=0.1, color='r', label='y_pred')
+                alpha=0.5, color='b', label='y_true')
+    plt.scatter(img_idx, np.array(y_pred)*0.94 + 0.02 , marker='_', # not cool, hackish solution
+                alpha=0.5, color='r', label='y_pred')
     plt.legend()
     plt.title('P_optimal = %2.3f' % p_optimal)
     # plt.savefig('detections.png')
