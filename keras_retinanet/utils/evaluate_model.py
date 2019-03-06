@@ -488,10 +488,11 @@ def detector_one_sheet(
 
     # Plot prob. treshold curve
     # plt.subplot(2,1,1)
+    max_acc = np.max(acc)
     plt.plot(p_thresholds*100, acc*100)
     plt.xlabel(plots_words[lang]['prob_threshold'])
     plt.ylabel(plots_words[lang]['acc'])
-    plt.title('P_optimal = %2.3f' % p_optimal)
+    plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     plt.grid(True)
     # plt.savefig('acc_vs_prob_threshold.png')
     plt.show()
@@ -509,7 +510,7 @@ def detector_one_sheet(
     plt.scatter(img_idx, np.array(y_pred)*0.94 + 0.02 , marker='_', # not cool, hackish solution
                 alpha=0.5, color='r', label='y_pred')
     plt.legend()
-    plt.title('P_optimal = %2.3f' % p_optimal)
+    plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     # plt.savefig('detections.png')
     plt.show()
 
@@ -518,12 +519,12 @@ def detector_one_sheet(
     # plt.subplot(1,2,1)
     plot_confusion_matrix(y_true, y_pred, np.array(
         ['No Drone', 'Drone']), normalize=True)
-    plt.title('P_optimal = %2.3f' % p_optimal)
+    plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
 
     # plt.subplot(1,2,2)
     plot_confusion_matrix(y_true, y_pred, np.array(
         ['No Drone', 'Drone']), normalize=False)
 
-    plt.title('P_optimal = %2.3f' % p_optimal)
+    plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     # plt.savefig('optimal_confusion.png')
     plt.show()
