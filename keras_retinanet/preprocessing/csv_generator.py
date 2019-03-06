@@ -25,6 +25,7 @@ from six import raise_from
 import csv
 import sys
 import os.path
+import cv2
 
 
 def _parse(value, function, fmt):
@@ -130,6 +131,7 @@ class CSVGenerator(Generator):
         csv_class_file,
         base_dir=None,
         grayscale=False,
+        bgr_to_rgb = False,
         **kwargs
     ):
         """ Initialize a CSV data generator.
@@ -144,6 +146,7 @@ class CSVGenerator(Generator):
         self.base_dir    = base_dir
 
         self.grayscale   = grayscale
+        self.bgr_to_rgb  = bgr_to_rgb
 
         # Take base_dir from annotations file if not explicitly specified.
         if self.base_dir is None:
@@ -216,6 +219,10 @@ class CSVGenerator(Generator):
         """ Load an image at the image_index.
         """
         img = read_image_bgr(self.image_path(image_index))
+
+        if self.bgr_to_rgb:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
         if self.grayscale:
             img_gray = np.mean(img, axis = 2)
             img[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
