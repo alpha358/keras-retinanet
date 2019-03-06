@@ -334,8 +334,8 @@ def get_prediction_vectors(
     y_hat = []
     y_gt = []
 
-    y_full_gt = []
     y_full_hat = []
+    y_full_gt = []
 
     iou_of_confident_detections = []  # todo: may need to change to default dict
     '''
@@ -370,20 +370,26 @@ def get_prediction_vectors(
                 #   --- all predictions satisfying prob_thresh
                 box_idx = 0
 
-                for confident in confident_predictions:
-                    if confident:
 
-                        # Account for each confident bbox
-                        # -------------------------------------------------------------
-                        # if confident and if iou is good enough
-                        y_full_gt.append(1)
-                        y_full_hat.append(iou_of_boxes[idx][box_idx] > iou_thresh)
-                        # -------------------------------------------------------------
+                # Account for each confident bbox
+                # -------------------------------------------------------------
+                if np.any(confident_predictions):
+                    for confident in confident_predictions:
+                        if confident:
+                            # if confident and if iou is good enough
+                            y_full_gt.append(1)
+                            y_full_hat.append(iou_of_boxes[idx][box_idx] > iou_thresh)
 
-                        iou_of_confident_detections.append(
-                            iou_of_boxes[idx][box_idx]
-                        )
-                    box_idx += 1 # next box
+
+                            iou_of_confident_detections.append(
+                                iou_of_boxes[idx][box_idx]
+                            )
+                        box_idx += 1 # next box
+                else:
+                    # no confident preditions
+                    y_full_gt.append(1)
+                    y_full_hat.append(0)
+                # -------------------------------------------------------------
 
                 # Compute prediction vector
                 if drone_anywhere:
@@ -402,7 +408,8 @@ def get_prediction_vectors(
                 y_full_gt.append(1)
                 y_full_hat.append(0)
 
-        else:  # drone does not exist
+        else:
+            # drone does not exist
             y_gt.append(0)
 
             if detections_exist:
@@ -410,23 +417,30 @@ def get_prediction_vectors(
 
                 # Account for each confident bbox
                 # -------------------------------------------------------------
-                for confident in confident_predictions:
-                    if confident:
-                        y_full_gt.append(0)
-                        y_full_hat.append(1)
+                if np.any(confident_predictions):
+                    for confident in confident_predictions:
+                        if confident:
+                            y_full_gt.append(0)
+                            y_full_hat.append(1)
+                else:
+                    # zero confident predictions
+                    y_full_gt.append(0)
+                    y_full_hat.append(0)
                 # -------------------------------------------------------------
 
                 # no need to check IoU for failed detections
                 y_hat.append(int(np.any(confident_predictions)))
             else:
-                # no detections
+                # no detections, no drone
                 y_hat.append(0)
                 y_full_gt.append(0)
                 y_full_hat.append(0)
 
 
-    return y_gt, y_hat, y_full_gt, y_full_hat, arr(iou_of_confident_detections)
+    y_full_gt = arr(y_full_gt)
+    y_full_hat = arr(y_full_hat)
 
+    return y_gt, y_hat, y_full_gt, y_full_hat, arr(iou_of_confident_detections)
 
 # ============================================================================ #
 #                                    GET IOU                                   #
