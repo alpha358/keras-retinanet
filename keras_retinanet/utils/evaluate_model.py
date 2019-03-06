@@ -328,6 +328,7 @@ def get_prediction_vectors(
 
     y_hat = []
     y_gt = []
+    iou_of_confident_detections = []  # todo: may need to change to default dict
     '''
     y_hat[idx] --- 1 - network point to the right place for a drone
                --- 0 - network did not found the drone, or points to a wrong place
@@ -337,14 +338,13 @@ def get_prediction_vectors(
     '''
     def arr(x): return np.array(x)
 
+
     for idx in range(N_examples):
         # iterating over images
 
         # logical vars
         drone_exist = len(true_boxes[idx]) > 0
         detections_exist = len(pred_boxes[idx]) > 0
-
-        iou_of_confident_detections = [] # todo: may need to change to default dict
 
         # --------------- logic of detection ---------------- #
         if drone_exist:
