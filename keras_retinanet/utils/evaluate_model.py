@@ -48,8 +48,13 @@ def plot_movie_js(image_array):
 
 
 # ============================================================================ #
-#                                TOOL FUNCTIONS                                #
+#                                TOOLS                                         #
 # ============================================================================ #
+
+class Vividict(dict):
+    def __missing__(self, key):
+        value = self[key] = type(self)()  # retain local pointer to value
+        return value                     # faster to return than dict lookup
 
 # -------------------------- intersection over union ------------------------- #
 def iou(box1, box2):
@@ -442,19 +447,6 @@ def detector_one_sheet(
 
     acc = np.array(acc)
     # ------------------------------------- - ------------------------------------ #
-    plots_words['lt']['prob_threshold'] = 'tikimybės riba'
-    plots_words['en']['prob_threshold'] = 'probability threshold'
-    plots_words['en']['acc'] = 'accuracy'
-    plots_words['lt']['acc'] = 'tikslumas'
-
-
-    # Plot prob. treshold curve
-    plt.plot(p_thresholds*100, acc*100)
-    plt.xlabel(plots_words[lang]['prob_threshold'])
-    plt.ylabel(plots_words[lang]['acc'])
-    plt.savefig('acc_vs_prob_threshold.png')
-    plt.show()
-
 
     # Optimal prob. threshold
     idx_max_acc = np.argmax(acc)
@@ -462,7 +454,37 @@ def detector_one_sheet(
 
     y_true, y_pred = prediction_vectors(p_optimal)
 
+
+    # ----------------------------------- Plots ---------------------------------- #
+    plots_words = Vividict() # just a nested dict
+    plots_words['lt']['prob_threshold'] = 'tikimybės riba'
+    plots_words['en']['prob_threshold'] = 'probability threshold'
+    plots_words['en']['acc'] = 'accuracy'
+    plots_words['lt']['acc'] = 'tikslumas'
+
+
+    # Plot prob. treshold curve
+    # plt.subplot(2,1,1)
+    plt.plot(p_thresholds*100, acc*100)
+    plt.xlabel(plots_words[lang]['prob_threshold'])
+    plt.ylabel(plots_words[lang]['acc'])
+    plt.title('P_optimal = f2.3' % p_optimal)
+    plt.savefig('acc_vs_prob_threshold.png')
+    plt.show()
+
+
+    img_idx = list(range(len(y_pred)))
+    plt.scatter(img_idx, y_true, marker='.', alpha=0.1, color='b')
+    plt.scatter(img_idx, y_pred, marker='.', alpha=0.1, color='r')
+    plt.legend('y_true', 'y_pred')
+    plt.title('P_optimal = f2.3' % p_optimal)
+    plt.savefig('detections.png')
+    plt.show()
+
+
+
     plot_confusion_matrix(y_true, y_pred, np.array(
         ['No Drone', 'Drone']), normalize=True)
+    plt.title('P_optimal = f2.3' % p_optimal)
     plt.savefig('optimal_confusion.png')
     plt.show()
