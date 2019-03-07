@@ -241,6 +241,6 @@ def generate_csv_dataset(
                          index=False, header=False)
 
     df_val = generate_exapmples(val_generator, N_val)
-    df_train.to_csv(os.path.join(main_dir, 'annotation_train.csv'),
+    df_val.to_csv(os.path.join(main_dir, 'annotation_train.csv'),
         index=False, header=False)
 
