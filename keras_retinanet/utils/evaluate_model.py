@@ -689,7 +689,7 @@ def detector_one_sheet(
         generator,
         p_optimal,
         iou_thresh = iou_thresh,
-        N_img = None,  # n examples to process
+        N_img=N_img,  # n examples to process
         plot_here = False,
         savedir = detections_dir
     )
