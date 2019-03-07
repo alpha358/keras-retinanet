@@ -214,8 +214,8 @@ def plot_detections(
 
 
         # Choose colors
-        color_pred = label_color(label)
-        color_true = label_color(label+1)
+        color_pred = label_color(0)
+        color_true = label_color(1)
 
         if drone_exist_in_img:
             # True bbox
@@ -683,6 +683,7 @@ def detector_one_sheet(
 
     # -------------------- plot detections at optimal p_thresh ------------------- #
     print('--- Saving detection images ---')
+    # TODO: reuse saved bboxes from the first network run
     plot_detections(
         model,
         generator,
