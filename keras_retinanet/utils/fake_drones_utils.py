@@ -210,7 +210,7 @@ def generate_csv_dataset(
             img = generator.load_image(n)
             img_name = str(n)+'.jpg'
             # save img
-            cv2.imwrite(os.path.join(img_dir, img_name), img)
+            cv2.imwrite(os.path.join(img_dir, img_name), img*255)
 
             # Load GT annotations
             annotations = generator.load_annotations(n)['bboxes']
