@@ -204,7 +204,7 @@ def generate_csv_dataset(
         df = pd.DataFrame(columns=['img_name', 'x1', 'y1', 'x2', 'y2', 'class'])
 
         # iterate over examples from generator
-        for n in N:
+        for n in range(N):
             img = train_generator.load_image(n)
             img_name = str(n)+'.jpg'
             # save img
