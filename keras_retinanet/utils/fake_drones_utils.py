@@ -187,18 +187,20 @@ def generate_csv_dataset(
     Purpose: Generate a dataset with csv files for csv generator
     '''
     main_dir = dir_name
-    img_dir = os.path.join(dir_name, 'img')
+    img_dir_train = os.path.join(dir_name, 'img_train')
+    img_dir_test = os.path.join(dir_name, 'img_test')
 
     try:
         os.mkdir(main_dir)  # dataset dir
-        os.mkdir(img_dir)  # images dir
+        os.mkdir(img_dir_train)  # images dir
+        os.mkdir(img_dir_test)  # images dir
     except:
         pass
 
     # generate training examples
     #   --- assuming just one example drone per image
 
-    def generate_exapmples(generator, N):
+    def generate_exapmples(generator, N, img_dir):
 
         # dataframe for csv
         df = pd.DataFrame(columns=['img_name', 'x1', 'y1', 'x2', 'y2', 'class'])
@@ -224,7 +226,7 @@ def generate_csv_dataset(
 
 
             # append csv
-            df.append({
+            df = df.append({
                 'img_name': img_name,
                 'x1':x1,
                 'y1':y1,
@@ -236,11 +238,11 @@ def generate_csv_dataset(
         return df
 
     # generate examples
-    df_train = generate_exapmples(train_generator, N_train)
+    df_train = generate_exapmples(train_generator, N_train, img_dir_train)
     df_train.to_csv(os.path.join(main_dir, 'annotation_train.csv'),
                          index=False, header=False)
 
-    df_val = generate_exapmples(val_generator, N_val)
-    df_val.to_csv(os.path.join(main_dir, 'annotation_train.csv'),
+    df_val = generate_exapmples(val_generator, N_val, img_dir_test)
+    df_val.to_csv(os.path.join(main_dir, 'annotation_test.csv'),
         index=False, header=False)
 
