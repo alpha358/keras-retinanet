@@ -212,14 +212,14 @@ def generate_csv_dataset(
             cv2.imwrite(os.path.join(img_dir, img_name), img)
 
             # Load GT annotations
-            annotations = generator.load_annotations(n_frame)['bboxes']
+            annotations = generator.load_annotations(n)['bboxes']
 
             # default
             x1, y1, x2, y2 = None, None, None, None
             class_ = None
 
             if len(annotations) > 0: # there are some annotations
-                box = generator.load_annotations(n_frame)['bboxes'][0]
+                box = generator.load_annotations(n)['bboxes'][0]
                 x1, y1, x2, y2 = box
                 class_ = 'drone'
 
@@ -234,7 +234,7 @@ def generate_csv_dataset(
                 'class':class_
             })
 
-    return df
+        return df
 
     # generate examples
     df_train = generate_exapmples(train_generator, N_train)
