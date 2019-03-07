@@ -61,7 +61,7 @@ def inspect_frame_gt(generator, n_frame):
     draw = generator.load_image(n_frame)
     try:  # try if there are bboxes
         box = generator.load_annotations(n_frame)['bboxes'][0]
-        draw_box(draw, box.astype(int), color=label_color(0))
+        draw_box(draw, box.astype(int), color=label_color(0), thickness=1)
     except:
         pass
     plt.imshow(draw)
@@ -219,14 +219,15 @@ def plot_detections(
 
         if drone_exist_in_img:
             # True bbox
-            draw_box( draw, annotation_true['bboxes'][0], color=color_true)
+            draw_box( draw, annotation_true['bboxes'][0], color=color_true, thickness=1)
 
         # ---------------------- Iterate over network detections --------------------- #
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
 
             # plot boxes
             if score > p_thresh:
-                draw_box(draw, box.astype(int), color=color_pred)  # predicted box
+                draw_box(draw, box.astype(int), color=color_pred,
+                         thickness=1)  # predicted box
                 # caption = "{} {:.3f}".format(labels_to_names[label], score)
                 # draw_caption(draw, box.astype(int), caption)
 
@@ -357,12 +358,13 @@ def get_detections(
 
             # ---------------------------- plots bboxes on img --------------------------- #
             if (save_plots or get_img_array) and label >= 0:
-                draw_box(draw, box.astype(int), color=color_pred)  # predicted box
+                draw_box(draw, box.astype(int), color=color_pred,
+                         thickness=1)  # predicted box
                 caption = "{} {:.3f}".format(labels_to_names[label], score)
                 draw_caption(draw, box.astype(int), caption)
 
                 if drone_exist_in_img:
-                    draw_box(draw, annotation_true['bboxes'][0], color=color_true)  # predicted box
+                    draw_box(draw, annotation_true['bboxes'][0], color=color_true, thickness=1)  # predicted box
 
                 if get_img_array:
                     image_array[img_idx, :, :, :] = draw
