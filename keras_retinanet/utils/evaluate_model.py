@@ -644,11 +644,13 @@ def detector_one_sheet(
     plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     plt.grid(True)
     # plt.savefig('acc_vs_prob_threshold.png')
+    plt.savefig(os.path.join(report_dir, 'acc_vs_prob_threshold.png'))
     plt.show()
 
     plt.hist(iou_of_confident_detections)
     plt.title('Mean IoU = %2.2f' %
               np.mean(iou_of_confident_detections))
+    plt.savefig(os.path.join(report_dir, 'mean_iou.png'))
     plt.show()
 
     # --------------------------- Predictions at frames -------------------------- #
@@ -661,6 +663,7 @@ def detector_one_sheet(
     plt.legend()
     # plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     # plt.savefig('detections.png')
+    plt.savefig(os.path.join(report_dir, 'predictions_at_frames.png'))
     plt.show()
 
 
@@ -675,7 +678,7 @@ def detector_one_sheet(
         ['No Drone', 'Drone']), normalize=False)
 
     plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
-    # plt.savefig('optimal_confusion.png')
+    plt.savefig(os.path.join(report_dir , 'optimal_confusion.png'))
     plt.show()
 
     # -------------------- plot detections at optimal p_thresh ------------------- #
