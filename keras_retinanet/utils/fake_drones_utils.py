@@ -195,6 +195,6 @@ def generate_csv_dataset(
         pass
 
     # generate training examples
+    #   --- assuming just one example drone per image
     for n in range(N_train):
-
-        pass
+        bbox = train_generator.load_image(n)
