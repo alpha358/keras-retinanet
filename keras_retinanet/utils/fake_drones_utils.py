@@ -187,14 +187,59 @@ def generate_csv_dataset(
     '''
     Purpose: Generate a dataset with csv files for csv generator
     '''
+    main_dir = dir_name
+    img_dir = os.path.join(dir_name, 'img')
 
     try:
-        os.mkdir(dir_name) # dataset dir
-        os.mkdir(os.path.join(dir_name, 'img')) # images dir
+        os.mkdir(main_dir)  # dataset dir
+        os.mkdir(img_dir)  # images dir
     except:
         pass
 
     # generate training examples
     #   --- assuming just one example drone per image
-    for n in range(N_train):
-        bbox = train_generator.load_image(n)
+
+    def generate_exapmples(generator, N):
+
+        # dataframe for csv
+        df = pd.DataFrame(columns=['img_name', 'x1', 'y1', 'x2', 'y2', 'class'])
+
+        # iterate over examples from generator
+        for n in N:
+            img = train_generator.load_image(n)
+            img_name = str(n)+'.jpg'
+            # save img
+            cv2.imwrite(os.path.join(img_dir, img_name), img)
+
+            # Load GT annotations
+            annotations = generator.load_annotations(n_frame)['bboxes']
+
+            # default
+            x1, y1, x2, y2 = None, None, None, None
+            class_ = None
+
+            if len(annotations) > 0: # there are some annotations
+                box = generator.load_annotations(n_frame)['bboxes'][0]
+                x1, y1, x2, y2 = box
+                class_ = 'drone'
+
+
+            # append csv
+            df.append({
+                'img_name': img_name,
+                'x1':x1,
+                'y1':y1,
+                'x2':x2,
+                'y2':y2,
+                'class':class_
+            })
+
+    return df
+
+    # generate examples
+    df_train = generate_exapmples(train_generator, N_train)
+    df_train.to_csv('annotation_train.csv', index=False, header=False)
+
+    df_val = generate_exapmples(val_generator, N_val)
+    df_train.to_csv('annotation_val.csv', index=False, header=False)
+

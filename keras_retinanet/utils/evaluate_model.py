@@ -651,6 +651,7 @@ def detector_one_sheet(
     plt.title('Mean IoU = %2.2f' %
               np.mean(iou_of_confident_detections))
     plt.savefig(os.path.join(report_dir, 'mean_iou.png'))
+    plt.grid(True)
     plt.show()
 
     # --------------------------- Predictions at frames -------------------------- #
