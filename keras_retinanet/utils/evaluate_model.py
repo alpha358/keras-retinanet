@@ -683,7 +683,7 @@ def detector_one_sheet(
 
     # -------------------- plot detections at optimal p_thresh ------------------- #
     if save_detection_images:
-        print('--- Saving detection images ---')
+        # print('--- Saving detection images ---')
         # TODO: reuse saved bboxes from the first network run
         plot_detections(
             model,
