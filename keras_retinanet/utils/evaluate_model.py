@@ -672,11 +672,12 @@ def detector_one_sheet(
     plot_confusion_matrix(y_full_true, y_full_pred, np.array(
         ['No Drone', 'Drone']), normalize=True)
     plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
+    plt.savefig(os.path.join(report_dir , 'optimal_confusion_norm.png'))
+    plt.show()
 
     # plt.subplot(1,2,2)
-    plot_confusion_matrix(y_full_true, y_full_pred, np.array(
-        ['No Drone', 'Drone']), normalize=False)
-
+    plot_confusion_matrix(y_full_true, y_full_pred,
+     np.array(['No Drone', 'Drone']), normalize=False)
     plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     plt.savefig(os.path.join(report_dir , 'optimal_confusion.png'))
     plt.show()
