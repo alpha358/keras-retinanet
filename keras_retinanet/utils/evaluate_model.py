@@ -1,3 +1,4 @@
+from keras_retinanet.utils.visualization import draw_box
 from sklearn.metrics import accuracy_score
 '''
 Purpose:
@@ -50,6 +51,22 @@ def plot_movie_js(image_array):
 # ============================================================================ #
 #                                TOOLS                                         #
 # ============================================================================ #
+
+# ----------------------------------- misc ----------------------------------- #
+def inspect_frame_gt(generator, n_frame):
+    '''
+    Purpose: show generator ground truth bbox for n_frame
+    '''
+    plt.figure(figsize=(13, 13))
+    draw = generator.load_image(n_frame)
+    try:  # try if there are bboxes
+        box = generator.load_annotations(n_frame)['bboxes'][0]
+        draw_box(draw, box.astype(int), color=label_color(0))
+    except:
+        pass
+    plt.imshow(draw)
+    plt.show()
+
 
 class Vividict(dict):
     def __missing__(self, key):
@@ -158,6 +175,77 @@ def plot_confusion_matrix(y_true, y_pred, classes,
 # ============================================================================ #
 #                                GET DETECTIONS                                #
 # ============================================================================ #
+def plot_detections(
+    model_test,
+    generator,
+    p_thresh,
+    iou_thresh,
+    N_img = None, # n examples to process
+    plot_here = False,
+    savedir = None
+    ):
+    '''
+    Purpose: plot best bounding boxes and save as jpg.
+    '''
+    if N_img == None:
+        N_img = generator.size()
+
+    # loop over examples
+    for img_idx in tqdm.tqdm(range(N_img)):
+
+        # load image
+        image = generator.load_image(img_idx)
+        annotation_true = generator.load_annotations(img_idx)
+        drone_exist_in_img = annotation_true['bboxes'].size > 0
+
+        draw = image.copy()
+
+        # preprocess image for network
+        image = preprocess_image(image)
+        image, scale = resize_image(image)
+
+        # process image
+        boxes, scores, labels = model_test.predict_on_batch(
+            np.expand_dims(image, axis=0)
+        )
+
+        # correct for image scale
+        boxes /= scale
+
+
+        # Choose colors
+        color_pred = label_color(label)
+        color_true = label_color(label+1)
+
+        if drone_exist_in_img:
+            # True bbox
+            draw_box( draw, annotation_true['bboxes'][0], color=color_true)
+
+        # ---------------------- Iterate over network detections --------------------- #
+        for box, score, label in zip(boxes[0], scores[0], labels[0]):
+
+            # plot boxes
+            if score > p_thresh:
+                draw_box(draw, box.astype(int), color=color_pred)  # predicted box
+                # caption = "{} {:.3f}".format(labels_to_names[label], score)
+                # draw_caption(draw, box.astype(int), caption)
+
+                if savedir:
+                    cv2.imwrite(os.path.join(
+                        savedir, str(img_idx) + '.jpg'), draw)
+
+                if plot_here:
+                    plt.figure(figsize=(12,12))
+                    plt.imshow(draw)
+                    plt.show()
+
+
+
+
+
+
+
+
 
 def get_detections(
             model_test,
@@ -207,8 +295,7 @@ def get_detections(
     true_boxes = defaultdict(list) # list of true bboxes
     pred_boxes = defaultdict(list) # list of predicted bboxes
 
-    for n in tqdm.tqdm( range(N_img) ):
-        img_idx = n
+    for img_idx in tqdm.tqdm( range(N_img) ):
         # load image
         image = validation_generator.load_image(img_idx)
         annotation_true = validation_generator.load_annotations(img_idx)
@@ -278,10 +365,11 @@ def get_detections(
                     draw_box(draw, annotation_true['bboxes'][0], color=color_true)  # predicted box
 
                 if get_img_array:
-                    image_array[n, :, :, :] = draw
+                    image_array[img_idx, :, :, :] = draw
 
                 if save_plots:
-                    cv2.imwrite(os.path.join(savedir, str(n) + '.jpg'), draw)
+                    cv2.imwrite(os.path.join(
+                        savedir, str(img_idx) + '.jpg'), draw)
 
 
     # iou_of_boxes = np.array(iou_of_boxes)
@@ -468,10 +556,18 @@ def detector_one_sheet(
     generator,
     labels_to_names,
     save_detection_images = False,
-    detection_img_dir = './detections',
+    report_dir = './report',
     N_img = None, # None means all images from generator
     lang = 'en' # plots language
     ):
+
+    # Try to create report directories
+    os.mkdir(report_dir)
+    detections_dir = os.path.join(report_dir, 'detections')
+    os.mkdir(detections_dir)
+
+
+
 
     # Get detections for images given by generator
     iou_of_boxes, \
@@ -481,10 +577,10 @@ def detector_one_sheet(
         model,
         generator,
         labels_to_names,
-        save_plots = save_detection_images,
+        save_plots = False, # we get all detections at this point, so plot later
         get_img_array = False,
         N_img = N_img,
-        savedir = detection_img_dir
+        savedir = os.path.join(report_dir, 'detections')
     )
 
     # ------------------------- Vary probability treshold ------------------------ #
@@ -557,9 +653,9 @@ def detector_one_sheet(
     # --------------------------- Predictions at frames -------------------------- #
     img_idx = list(range(len(y_pred)))
     plt.figure(figsize=(10,4))
-    plt.scatter(img_idx, y_true, marker='_',
+    plt.scatter(img_idx, y_true, marker=',',
                 alpha=0.5, color='b', label='y_true')
-    plt.scatter(img_idx, np.array(y_pred)*0.94 + 0.02 , marker='_', # not cool, hackish solution
+    plt.scatter(img_idx, np.array(y_pred)*0.94 + 0.02 , marker=',', # not cool, hackish solution
                 alpha=0.5, color='r', label='any_correct(y_pred)')
     plt.legend()
     # plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
@@ -580,3 +676,15 @@ def detector_one_sheet(
     plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     # plt.savefig('optimal_confusion.png')
     plt.show()
+
+    # -------------------- plot detections at optimal p_thresh ------------------- #
+    print('--- Saving detection images ---')
+    plot_detections(
+        model,
+        generator,
+        p_optimal,
+        iou_thresh,
+        N_img = None,  # n examples to process
+        plot_here = False,
+        savedir = detections_dir
+    )
