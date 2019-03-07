@@ -181,8 +181,7 @@ def generate_csv_dataset(
     val_generator,
     N_val,
     N_train,
-    dir_name = 'drones_csv',
-    ):
+    dir_name = 'drones_csv'):
 
     '''
     Purpose: Generate a dataset with csv files for csv generator
@@ -238,8 +237,10 @@ def generate_csv_dataset(
 
     # generate examples
     df_train = generate_exapmples(train_generator, N_train)
-    df_train.to_csv('annotation_train.csv', index=False, header=False)
+    df_train.to_csv(os.path.join(main_dir, 'annotation_train.csv'),
+                         index=False, header=False)
 
     df_val = generate_exapmples(val_generator, N_val)
-    df_train.to_csv('annotation_val.csv', index=False, header=False)
+    df_train.to_csv(os.path.join(main_dir, 'annotation_train.csv'),
+        index=False, header=False)
 
