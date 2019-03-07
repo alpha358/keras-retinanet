@@ -231,7 +231,7 @@ def generate_csv_dataset(
                 'x2':x2,
                 'y2':y2,
                 'class':class_
-            })
+            }, ignore_index=True)
 
         return df
 
