@@ -657,9 +657,9 @@ def detector_one_sheet(
     img_idx = list(range(len(y_pred)))
     plt.figure(figsize=(10,4))
     plt.scatter(img_idx, y_true, marker=',',
-                alpha=0.5, color='b', label='y_true')
+                alpha=0.5, color='b', label='y_true', s=1)
     plt.scatter(img_idx, np.array(y_pred)*0.94 + 0.02 , marker=',', # not cool, hackish solution
-                alpha=0.5, color='r', label='any_correct(y_pred)')
+                alpha=0.5, color='r', label='any_correct(y_pred)', s=1)
     plt.legend()
     # plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     # plt.savefig('detections.png')

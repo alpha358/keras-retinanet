@@ -167,3 +167,34 @@ def load_drone_dataset(bgrs_path, drones_path, N_max=1000, new_split=True, val_r
     bgr_images = load_images(bgr_paths, N_max=1000, alpha_chnl=False)
 
     return drone_images, bgr_images, train_bgr_indexes, val_bgr_indexes, train_drone_indexes, val_drone_indexes
+
+
+
+
+
+# ============================================================================ #
+#                             GENERATE CSV DATASET                             #
+# ============================================================================ #
+
+def generate_csv_dataset(
+    train_generator,
+    val_generator,
+    N_val,
+    N_train,
+    dir_name = 'drones_csv',
+    ):
+
+    '''
+    Purpose: Generate a dataset with csv files for csv generator
+    '''
+
+    try:
+        os.mkdir(dir_name) # dataset dir
+        os.mkdir(os.path.join(dir_name, 'img')) # images dir
+    except:
+        pass
+
+    # generate training examples
+    for n in range(N_train):
+
+        pass
