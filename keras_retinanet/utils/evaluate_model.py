@@ -558,7 +558,8 @@ def detector_one_sheet(
     save_detection_images = False,
     report_dir = './report',
     N_img = None, # None means all images from generator
-    lang = 'en' # plots language
+    lang = 'en', # plots language
+    iou_thresh = 0.5
     ):
 
     # Try to create report directories
@@ -597,7 +598,7 @@ def detector_one_sheet(
             iou_of_boxes,
             N_img,
             drone_anywhere=False,
-            iou_thresh=0.5,
+            iou_thresh = iou_thresh,
             prob_thresh=prob_thresh
         )
 
@@ -683,7 +684,7 @@ def detector_one_sheet(
         model,
         generator,
         p_optimal,
-        iou_thresh,
+        iou_thresh = iou_thresh,
         N_img = None,  # n examples to process
         plot_here = False,
         savedir = detections_dir
