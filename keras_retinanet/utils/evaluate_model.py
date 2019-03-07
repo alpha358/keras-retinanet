@@ -230,14 +230,14 @@ def plot_detections(
                 # caption = "{} {:.3f}".format(labels_to_names[label], score)
                 # draw_caption(draw, box.astype(int), caption)
 
-                if savedir:
-                    cv2.imwrite(os.path.join(
-                        savedir, str(img_idx) + '.jpg'), draw)
+        if savedir:
+            cv2.imwrite(os.path.join(
+                savedir, str(img_idx) + '.jpg'), draw)
 
-                if plot_here:
-                    plt.figure(figsize=(12,12))
-                    plt.imshow(draw)
-                    plt.show()
+        if plot_here:
+            plt.figure(figsize=(12,12))
+            plt.imshow(draw)
+            plt.show()
 
 
 
