@@ -263,7 +263,7 @@ def plot_detections(
 
                     # Clean detections directory
                     files = glob.glob(
-                                os.path.join(savedir, '/*') )
+                                os.path.join(savedir, '*') )
                     for f in files:
                         os.remove(f)
 
