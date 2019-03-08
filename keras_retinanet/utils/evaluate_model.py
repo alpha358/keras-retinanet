@@ -197,6 +197,11 @@ def plot_detections(
     '''
     Purpose: plot best bounding boxes and save as jpg.
     '''
+    try:
+        os.mkdir(savedir) # try to create savedir
+    except:
+        pass
+
     if N_img == None:
         N_img = generator.size()
 
