@@ -148,7 +148,7 @@ class Drones_Cut_Paste_Generator(Generator):
         drone_size_range = (0.4, 0.6),
         drone_rotation_range = (-45, 45),
         grayscale = False,
-        bgr = True
+        bgr = True,
         **kwargs # pass to parent class
         # kwargs = None # may need something to pass to parent class
     ):
