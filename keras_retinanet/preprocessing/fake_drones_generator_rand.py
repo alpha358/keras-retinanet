@@ -148,6 +148,7 @@ class Drones_Cut_Paste_Generator(Generator):
         drone_size_range = (0.4, 0.6),
         drone_rotation_range = (-45, 45),
         grayscale = False,
+        bgr = True
         **kwargs # pass to parent class
         # kwargs = None # may need something to pass to parent class
     ):
@@ -158,8 +159,8 @@ class Drones_Cut_Paste_Generator(Generator):
             csv_class_file: Path to the CSV classes file.
             base_dir: Directory w.r.t. where the files are to be searched (defaults to the directory containing the csv_data_file).
         """
-
-        self.bgr_imgs = bgr_imgs
+        self.bgr = bgr # use bgr order of color channels
+        self.bgr_imgs = bgr_imgs #background images
         self.drone_imgs = drone_imgs
         self.bgr_indexes = bgr_indexes
         self.drone_indexes = drone_indexes
@@ -254,6 +255,8 @@ class Drones_Cut_Paste_Generator(Generator):
         #
         # for i in range(self.batch_size):
 
+        # TODO: BGR -> RGB
+
         bgr_index = np.random.choice(self.bgr_indexes)
         drone_index = np.random.choice(self.drone_indexes)
 
@@ -264,6 +267,10 @@ class Drones_Cut_Paste_Generator(Generator):
                                 bgr_img, drone_img,
                                 self.drone_size_range,
                                 self.drone_rotation_range)
+
+        # COLOR CONVERSION RGB->BGR
+        if self.bgr:
+            fake_img = cv2.cvtColor(fake_img, cv2.COLOR_RGB2BGR)
 
         fake_img, bbox = resize_img_and_bbox(fake_img, bbox, self.image_shape)
 
