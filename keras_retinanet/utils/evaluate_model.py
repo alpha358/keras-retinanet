@@ -1,3 +1,4 @@
+import zipfile
 from keras_retinanet.utils.visualization import draw_box
 from sklearn.metrics import accuracy_score
 '''
@@ -18,6 +19,7 @@ import time
 import tqdm
 import cv2
 import os
+import glob
 from collections import defaultdict
 from sklearn.metrics import confusion_matrix
 from sklearn.utils.multiclass import unique_labels
@@ -51,6 +53,13 @@ def plot_movie_js(image_array):
 # ============================================================================ #
 #                                TOOLS                                         #
 # ============================================================================ #
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file))
+
+
 
 # ----------------------------------- misc ----------------------------------- #
 def inspect_frame_gt(generator, n_frame):
@@ -182,7 +191,8 @@ def plot_detections(
     iou_thresh,
     N_img = None, # n examples to process
     plot_here = False,
-    savedir = None
+    savedir = None,
+    N_ZIP = 100
     ):
     '''
     Purpose: plot best bounding boxes and save as jpg.
@@ -234,6 +244,23 @@ def plot_detections(
         if savedir:
             cv2.imwrite(os.path.join(
                 savedir, str(img_idx) + '.jpg'), draw)
+
+            if N_ZIP: # use zip
+                if img_idx+1 % N_ZIP == 0: # +1 due to zero indexing
+                    zip_n = img_idx // N_ZIP # zip file number
+
+                    # zip all contents of detections directory
+                    zip_file = zipfile.ZipFile(
+                            savedir+'_'+str(zip_n)+'.zip', 'w',
+                            zipfile.ZIP_DEFLATED
+                        )
+                    zipdir('tmp/', zip_file)
+
+                    # Clean detections directory
+                    files = glob.glob(
+                                os.path.join(savedir, '/*') )
+                    for f in files:
+                        os.remove(f)
 
         if plot_here:
             plt.figure(figsize=(12,12))
