@@ -251,7 +251,7 @@ def plot_detections(
                 savedir, str(img_idx) + '.jpg'), draw)
 
             if N_ZIP: # use zip
-                if img_idx+1 % N_ZIP == 0: # +1 due to zero indexing
+                if (img_idx+1) % N_ZIP == 0: # +1 due to zero indexing
                     zip_n = img_idx // N_ZIP # zip file number
 
                     # zip all contents of detections directory
