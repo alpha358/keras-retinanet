@@ -254,7 +254,7 @@ def plot_detections(
                             savedir+'_'+str(zip_n)+'.zip', 'w',
                             zipfile.ZIP_DEFLATED
                         )
-                    zipdir('tmp/', zip_file)
+                    zipdir(savedir, zip_file)
 
                     # Clean detections directory
                     files = glob.glob(
