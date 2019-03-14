@@ -196,7 +196,6 @@ def plot_detections(
     ):
     '''
     Purpose: plot best bounding boxes and save as jpg.
-    # TODO: display label names, probabilities
     '''
     try:
         os.mkdir(savedir) # try to create savedir
@@ -244,8 +243,8 @@ def plot_detections(
             if score > p_thresh:
                 draw_box(draw, box.astype(int), color=color_pred,
                          thickness=1)  # predicted box
-                # caption = "{} {:.3f}".format(labels_to_names[label], score)
-                # draw_caption(draw, box.astype(int), caption)
+                caption = "{} {:.3f}".format(labels_to_names[label], score)
+                draw_caption(draw, box.astype(int), caption)
 
         if savedir:
             cv2.imwrite(os.path.join(
