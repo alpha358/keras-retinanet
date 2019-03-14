@@ -196,6 +196,7 @@ def plot_detections(
     ):
     '''
     Purpose: plot best bounding boxes and save as jpg.
+    # TODO: display label names, probabilities
     '''
     try:
         os.mkdir(savedir) # try to create savedir
@@ -593,7 +594,8 @@ def detector_one_sheet(
     report_dir = './report',
     N_img = None, # None means all images from generator
     lang = 'en', # plots language
-    iou_thresh = 0.5
+    iou_thresh = 0.5,
+    p_thresh = None
     ):
 
     # Try to create report directories
@@ -661,7 +663,9 @@ def detector_one_sheet(
     # ipdb.set_trace()  # debugging starts here
 
 
-    # ----------------------------------- Plots ---------------------------------- #
+    # ============================================================================ #
+    #                                     PLOTS                                    #
+    # ============================================================================ #
     plots_words = Vividict() # just a nested dict
     plots_words['lt']['prob_threshold'] = 'tikimybės riba, %'
     plots_words['en']['prob_threshold'] = 'probability threshold, %'
@@ -717,16 +721,24 @@ def detector_one_sheet(
     plt.savefig(os.path.join(report_dir , 'optimal_confusion.png'))
     plt.show()
 
-    # -------------------- plot detections at optimal p_thresh ------------------- #
+    # ------------ plot detections at optimal p_thresh_detection_plots ----------- #
+    # if probability is specified, than override
+    if p_thresh:
+        p_thresh_detection_plots = p_thresh
+    else:
+        p_thresh_detection_plots = p_optimal
+
     if save_detection_images:
         # print('--- Saving detection images ---')
         # TODO: reuse saved bboxes from the first network run
         plot_detections(
             model,
             generator,
-            p_optimal,
+            p_thresh_detection_plots,
             iou_thresh = iou_thresh,
             N_img=N_img,  # n examples to process
             plot_here = False,
             savedir = detections_dir
         )
+
+    return p_optimal
