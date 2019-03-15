@@ -595,7 +595,8 @@ def detector_one_sheet(
     N_img = None, # None means all images from generator
     lang = 'en', # plots language
     iou_thresh = 0.5,
-    p_thresh = None
+    p_thresh = None,
+    plot_here = False
     ):
 
     # Try to create report directories
@@ -683,14 +684,16 @@ def detector_one_sheet(
     plt.grid(True)
     # plt.savefig('acc_vs_prob_threshold.png')
     plt.savefig(os.path.join(report_dir, 'acc_vs_prob_threshold.png'))
-    plt.show()
+    if plot_here:
+        plt.show()
 
     plt.hist(iou_of_confident_detections)
     plt.title('Mean IoU = %2.2f' %
               np.mean(iou_of_confident_detections))
-    plt.savefig(os.path.join(report_dir, 'mean_iou.png'))
     plt.grid(True)
-    plt.show()
+    plt.savefig(os.path.join(report_dir, 'mean_iou.png'))
+    if plot_here:
+        plt.show()
 
     # --------------------------- Predictions at frames -------------------------- #
     img_idx = list(range(len(y_pred)))
@@ -703,7 +706,8 @@ def detector_one_sheet(
     # plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     # plt.savefig('detections.png')
     plt.savefig(os.path.join(report_dir, 'predictions_at_frames.png'))
-    plt.show()
+    if plot_here:
+        plt.show()
 
 
     # ------------------------- ---- Confusion matrix --- ------------------------ #
@@ -712,14 +716,16 @@ def detector_one_sheet(
         ['No Drone', 'Drone']), normalize=True)
     plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     plt.savefig(os.path.join(report_dir , 'optimal_confusion_norm.png'))
-    plt.show()
+    if plot_here:
+        plt.show()
 
     # plt.subplot(1,2,2)
     plot_confusion_matrix(y_full_true, y_full_pred,
      np.array(['No Drone', 'Drone']), normalize=False)
     plt.title('P_optimal = %2.3f' % p_optimal + ', ACC_MAX = %2.2f' % max_acc)
     plt.savefig(os.path.join(report_dir , 'optimal_confusion.png'))
-    plt.show()
+    if plot_here:
+        plt.show()
 
     # ------------ plot detections at optimal p_thresh_detection_plots ----------- #
     # if probability is specified, than override
