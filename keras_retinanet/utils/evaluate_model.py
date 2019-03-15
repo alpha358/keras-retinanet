@@ -185,14 +185,15 @@ def plot_confusion_matrix(y_true, y_pred, classes,
 #                                GET DETECTIONS                                #
 # ============================================================================ #
 def plot_detections(
-    model_test,
-    generator,
-    p_thresh,
-    iou_thresh,
-    N_img = None, # n examples to process
-    plot_here = False,
-    savedir = None,
-    N_ZIP = 100
+        model_test,
+        generator,
+        p_thresh,
+        iou_thresh,
+        N_img = None, # n examples to process
+        plot_here = False,
+        savedir = None,
+        N_ZIP = 100,
+        labels_to_names = {0: 'drone'}
     ):
     '''
     Purpose: plot best bounding boxes and save as jpg.
@@ -737,7 +738,8 @@ def detector_one_sheet(
             iou_thresh = iou_thresh,
             N_img=N_img,  # n examples to process
             plot_here = False,
-            savedir = detections_dir
+            savedir = detections_dir,
+            labels_to_names=labels_to_names
         )
 
     return p_optimal
