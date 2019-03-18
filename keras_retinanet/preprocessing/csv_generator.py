@@ -224,7 +224,11 @@ class CSVGenerator(Generator):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         if self.grayscale:
-            img_gray = np.mean(img, axis = 2)
+
+            # Assume BGR order, convert to grayscale
+            img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+
+            # img_gray = np.mean(img, axis = 2) # simple solution
             img[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
             img[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
             img[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
