@@ -273,21 +273,24 @@ class Combined_CSVGenerator(Generator):
         N1 = generator1.size()
         N2 = generator2.size()
 
-        self.size_ = N1+N2
+        self.size_ = N1 + N2
         self.generators = [generator1, generator2]
 
         # ------------------------------ generator_example_indices ----------------------------- #
+        # Combined index for child generators
+
         self.generator_example_indices = {}
 
         for example_idx in range(0, N1+N2):
-            # simple generator selection
+            # Compute subgenerator index and its example index
             if example_idx >= N1:
                 generator_idx = 1
-                example_idx -= N1
+                example_idx_local = example_idx - N1
             else:
                 generator_idx = 0
+                example_idx_local = example_idx
 
-            self.generator_example_indices[example_idx] = (generator_idx, example_idx)
+            self.generator_example_indices[example_idx] = (generator_idx, example_idx_local)
 
 
         # # Reshuffle
