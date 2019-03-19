@@ -252,3 +252,107 @@ class CSVGenerator(Generator):
             ]]))
 
         return annotations
+
+
+
+# ============================================================================ #
+#                            COMBINE CSV GENERATORS                            #
+# ============================================================================ #
+# Combine two csv generators into one generator
+
+class Combined_CSVGenerator(Generator):
+    def __init__(
+        self,
+        generator1,
+        generator2,
+        # reshufle = True,
+        **kwargs
+    ):
+        # init attributes
+        # combined generator sizes
+        N1 = generator1.size()
+        N2 = generator2.size()
+
+        self.size_ = N1+N2
+        self.generators = [generator1, generator2]
+
+        # ------------------------------ generator_example_indices ----------------------------- #
+        self.generator_example_indices = {}
+
+        for example_idx in range(0, N1+N2):
+            # simple generator selection
+            if example_idx >= N1:
+                generator_idx = 1
+                example_idx -= N1
+            else:
+                generator_idx = 0
+
+            self.generator_example_indices[example_idx] = (generator_idx, example_idx)
+
+
+        # # Reshuffle
+        # if reshufle:
+        #     selection_idx = np.random.shuffle(
+        #         np.arange(0, N1 + N2)
+        #     )
+        # else:
+        #     selection_idx = np.arange(0, N1 + N2)
+
+        # pass other args to father class
+        super(Combined_CSVGenerator, self).__init__(**kwargs)
+
+
+    def size(self):
+        """ Size of the dataset.
+        """
+        return self.size_
+
+    def num_classes(self):
+        """ Number of classes in the dataset.
+        """
+        return self.generators[0].num_classes()
+
+    def has_label(self, label):
+        """ Returns True if label is a known label.
+        """
+        return self.generators[0].has_label(label) or \
+                    self.generators[1].has_label(label)
+
+    def has_name(self, name):
+        """ Returns True if name is a known class.
+        """
+        return self.generators[0].has_name(name) or \
+                    self.generators[1].has_name(name)
+
+
+    def name_to_label(self, name):
+        """ Map name to label.
+        """
+        return self.generators[0].name_to_label(name)
+
+
+    def label_to_name(self, label):
+        """ Map label to name.
+        """
+        return self.generators[0].label_to_name(label)
+
+
+    def image_aspect_ratio(self, image_index):
+        """ Compute the aspect ratio for an image with image_index.
+        """
+        generator_idx, example_idx = self.generator_example_indices[image_index]
+        return self.generators[generator_idx].image_aspect_ratio(example_idx)
+
+
+    def load_image(self, image_index):
+        """ Load an image at the image_index.
+        """
+        generator_idx, example_idx = self.generator_example_indices[image_index]
+        return self.generators[generator_idx].load_image(example_idx)
+
+
+    def load_annotations(self, image_index):
+        """ Load annotations for an image_index.
+        """
+        generator_idx, example_idx = self.generator_example_indices[image_index]
+        return self.generators[generator_idx].load_annotations(example_idx)
