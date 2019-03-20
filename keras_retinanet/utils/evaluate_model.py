@@ -1,5 +1,5 @@
 import zipfile
-from keras_retinanet.utils.visualization import draw_box
+from keras_retinanet.utils.visualization import draw_box, draw_circle
 from sklearn.metrics import accuracy_score
 '''
 Purpose:
