@@ -612,7 +612,8 @@ def detector_one_sheet(
     lang = 'en', # plots language
     iou_thresh = 0.5,
     p_thresh = None,
-    plot_here = True
+    plot_here = True,
+    aux_annot = None
     ):
 
     # Try to create report directories
@@ -761,7 +762,8 @@ def detector_one_sheet(
             N_img=N_img,  # n examples to process
             plot_here = False,
             savedir = detections_dir,
-            labels_to_names = labels_to_names
+            labels_to_names = labels_to_names,
+            aux_annot = aux_annot
         )
 
     return p_optimal
