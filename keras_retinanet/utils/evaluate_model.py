@@ -194,7 +194,8 @@ def plot_detections(
         savedir = None,
         N_ZIP = 100,
         labels_to_names = {0: 'drone'},
-        aux_annot = None # auxiliary annotations
+        aux_annot = None, # auxiliary annotations
+        aux_threshold = 0.5
     ):
     '''
     Purpose: plot best bounding boxes and save as jpg.
@@ -243,11 +244,14 @@ def plot_detections(
         if aux_annot:
             if img_name in aux_annot.keys():
                 p_aux, x_aux, y_aux = aux_annot[img_name]
+                radius = 10
+                if p_aux >= aux_threshold: # todo: change to just >
+                    draw_circle(draw, (x_aux, y_aux), radius, color, thickness=1)
 
         # True BBox
         if drone_exist_in_img:
             # True bbox
-            draw_box( draw, annotation_true['bboxes'][0], color=color_true, thickness=1)
+            draw_box(draw, annotation_true['bboxes'][0], color=color_true, thickness=1)
 
         # ---------------------- Iterate over network detections --------------------- #
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
