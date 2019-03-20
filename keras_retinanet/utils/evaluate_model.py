@@ -239,6 +239,7 @@ def plot_detections(
         # Choose colors
         color_pred = label_color(0)
         color_true = label_color(1)
+        color_aux = label_color(2)
 
         # Auxiliary annotations
         if aux_annot:
@@ -246,7 +247,7 @@ def plot_detections(
                 p_aux, x_aux, y_aux = aux_annot[img_name]
                 radius = 10
                 if p_aux >= aux_threshold: # todo: change to just >
-                    draw_circle(draw, (x_aux, y_aux), radius, color, thickness=1)
+                    draw_circle(draw, (x_aux, y_aux), radius, color_aux, thickness=1)
 
         # True BBox
         if drone_exist_in_img:
