@@ -20,6 +20,21 @@ import numpy as np
 from .colors import label_color
 
 
+def draw_circle(image, r, radius, color, thickness=1):
+    """ Draws a circle on an image with a given color.
+
+    # Arguments
+        image     : The image to draw on.
+        r         : A list of 2 elements (x1, y1).
+        R         : Circle radius.
+        color     : The color of the box.
+        thickness : The thickness of the lines to draw circle  with.
+    """
+    x, y = np.array(r).astype(int)
+    radius = int(radius)
+    # cv2.rectangle(image, (b[0], b[1]), (b[2], b[3]), color, thickness, cv2.LINE_AA)
+    cv2.circle(image, (x, y), radius, color, thickness, cv2.LINE_AA)
+
 def draw_box(image, box, color, thickness=1):
     """ Draws a box on an image with a given color.
 

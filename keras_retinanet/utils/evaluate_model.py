@@ -193,10 +193,12 @@ def plot_detections(
         plot_here = False,
         savedir = None,
         N_ZIP = 100,
-        labels_to_names = {0: 'drone'}
+        labels_to_names = {0: 'drone'},
+        aux_annot = None # auxiliary annotations
     ):
     '''
     Purpose: plot best bounding boxes and save as jpg.
+
     '''
     try:
         os.mkdir(savedir) # try to create savedir
@@ -211,6 +213,10 @@ def plot_detections(
 
         # load image
         image = generator.load_image(img_idx)
+
+        # get image name --- assuming CSV generator
+        img_name = os.path.basename(generator.image_path(img_idx))
+
         annotation_true = generator.load_annotations(img_idx)
         drone_exist_in_img = annotation_true['bboxes'].size > 0
 
@@ -233,6 +239,12 @@ def plot_detections(
         color_pred = label_color(0)
         color_true = label_color(1)
 
+        # Auxiliary annotations
+        if aux_annot:
+            if img_name in aux_annot.keys():
+                p_aux, x_aux, y_aux = aux_annot[img_name]
+
+        # True BBox
         if drone_exist_in_img:
             # True bbox
             draw_box( draw, annotation_true['bboxes'][0], color=color_true, thickness=1)
