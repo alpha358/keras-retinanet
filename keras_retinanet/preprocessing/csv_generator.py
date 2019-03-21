@@ -272,6 +272,7 @@ class Combined_CSVGenerator(Generator):
         self,
         generator1,
         generator2,
+        augmenter = None,
         # reshufle = True,
         **kwargs
     ):
@@ -279,6 +280,8 @@ class Combined_CSVGenerator(Generator):
         # combined generator sizes
         N1 = generator1.size()
         N2 = generator2.size()
+
+        self.augmenter = augmenter # non-geometric augmenter
 
         self.size_ = N1 + N2
         self.generators = [generator1, generator2]
@@ -358,7 +361,13 @@ class Combined_CSVGenerator(Generator):
         """ Load an image at the image_index.
         """
         generator_idx, example_idx = self.generator_example_indices[image_index]
-        return self.generators[generator_idx].load_image(example_idx)
+        img = self.generators[generator_idx].load_image(example_idx)
+
+        # augment image if function is passed, nongeometric !
+        if self.augmenter:
+            img = self.augmenter(img)
+
+        return img
 
 
     def load_annotations(self, image_index):
