@@ -132,6 +132,7 @@ class CSVGenerator(Generator):
         base_dir=None,
         grayscale=False,
         bgr_to_rgb = False,
+        augmenter = None, # non-geometric augmenter
         **kwargs
     ):
         """ Initialize a CSV data generator.
@@ -140,10 +141,14 @@ class CSVGenerator(Generator):
             csv_data_file: Path to the CSV annotations file.
             csv_class_file: Path to the CSV classes file.
             base_dir: Directory w.r.t. where the files are to be searched (defaults to the directory containing the csv_data_file).
+
+            augmenter --- non-geometric augmentation fn.
+            grayscale --- convert image to 3 channel grayscale ?
         """
         self.image_names = []
         self.image_data  = {}
         self.base_dir    = base_dir
+        self.augmenter   = augmenter
 
         self.grayscale   = grayscale
         self.bgr_to_rgb  = bgr_to_rgb
@@ -233,6 +238,8 @@ class CSVGenerator(Generator):
             img[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
             img[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
 
+        if self.augmenter:
+            img = self.augmenter(img)
 
         return img
 
