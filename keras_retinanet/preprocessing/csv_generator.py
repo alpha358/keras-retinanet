@@ -26,6 +26,7 @@ import csv
 import sys
 import os.path
 import cv2
+import os
 
 
 def _parse(value, function, fmt):
@@ -176,7 +177,22 @@ class CSVGenerator(Generator):
             raise_from(ValueError('invalid CSV annotations file: {}: {}'.format(csv_data_file, e)), None)
         self.image_names = list(self.image_data.keys())
 
+        #TODO: drop non-existing images
+        self.drop_nonexisting_images()
+
         super(CSVGenerator, self).__init__(**kwargs)
+
+    def drop_nonexisting_images(self):
+        '''
+        Purpose: drop not found images from image_names, image_data
+        '''
+        idx = 0
+        for im_name in self.image_names:
+            if not os.path.isfile(os.path.join(self.base_dir, im_name)):
+                # img not found - removing that line
+                del self.image_data[im_name]
+                del self.image_names[idx]
+            idx += 1 # img index
 
     def size(self):
         """ Size of the dataset.
