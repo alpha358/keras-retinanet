@@ -187,7 +187,8 @@ class CSVGenerator(Generator):
         Purpose: drop not found images from image_names, image_data
         '''
         idx = 0
-        for im_name in self.image_names.copy():  # copy to continue iterations
+        image_names = self.image_names.copy()
+        for im_name in image_names:  # copy to continue iterations
             if not os.path.isfile(os.path.join(self.base_dir, im_name)):
                 # img not found - removing that line
                 print('Img not found, droping: ', im_name)
