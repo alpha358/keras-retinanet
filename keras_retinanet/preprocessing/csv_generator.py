@@ -177,7 +177,6 @@ class CSVGenerator(Generator):
             raise_from(ValueError('invalid CSV annotations file: {}: {}'.format(csv_data_file, e)), None)
         self.image_names = list(self.image_data.keys())
 
-        #TODO: drop non-existing images
         self.drop_nonexisting_images()
 
         super(CSVGenerator, self).__init__(**kwargs)
