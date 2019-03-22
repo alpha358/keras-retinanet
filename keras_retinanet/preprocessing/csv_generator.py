@@ -192,7 +192,8 @@ class CSVGenerator(Generator):
             if not os.path.isfile(os.path.join(self.base_dir, im_name)):
                 # img not found - removing that line
                 print('Img not found, droping: ', im_name)
-                del self.image_data[im_name]
+                # del self.image_data[im_name]
+                self.image_data.pop(im_name)
                 del self.image_names[idx]
             idx += 1 # img index
 
