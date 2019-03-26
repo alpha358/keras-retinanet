@@ -101,6 +101,10 @@ def resnet_retinanet(num_classes, backbone='resnet50', inputs=None, modifier=Non
         resnet = keras_resnet.models.ResNet101(inputs, include_top=False, freeze_bn=True)
     elif backbone == 'resnet152':
         resnet = keras_resnet.models.ResNet152(inputs, include_top=False, freeze_bn=True)
+    elif backbone == 'resnet34':
+        resnet = keras_resnet.models.ResNet34(inputs, include_top=False, freeze_bn=True)
+    elif backbone == 'resnet18':
+        resnet = keras_resnet.models.ResNet18(inputs, include_top=False, freeze_bn=True)
     else:
         raise ValueError('Backbone (\'{}\') is invalid.'.format(backbone))
 
