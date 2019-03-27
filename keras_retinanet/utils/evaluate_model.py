@@ -201,6 +201,17 @@ def plot_detections(
     Purpose: plot best bounding boxes and save as jpg.
 
     '''
+    # detections dict for
+    detections_dict = {
+        'im_name' : [],
+        'x1' : [],
+        'y1' : [],
+        'x2' : [],
+        'y2' : [],
+        'p'  : [],
+        'label'  : []
+        }
+
     try:
         os.mkdir(savedir) # try to create savedir
     except:
@@ -257,6 +268,15 @@ def plot_detections(
         # ---------------------- Iterate over network detections --------------------- #
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
 
+            # Save detections
+            x1, y1, x2, y2 = box.astype(int)
+            detections_dict['x1'].append( x1 )
+            detections_dict['y1'].append( y1 )
+            detections_dict['x2'].append( x2 )
+            detections_dict['y2'].append( y2 )
+            detections_dict['p'].append( score )
+            detections_dict['label'].append( labels_to_names[label] )
+
             # plot boxes
             if score > p_thresh:
                 draw_box(draw, box.astype(int), color=color_pred,
@@ -285,10 +305,13 @@ def plot_detections(
                     for f in files:
                         os.remove(f)
 
+
         if plot_here:
             plt.figure(figsize=(12,12))
             plt.imshow(draw)
             plt.show()
+
+    return detections_dict
 
 
 
@@ -751,6 +774,7 @@ def detector_one_sheet(
         p_thresh_detection_plots = p_thresh
     else:
         p_thresh_detection_plots = p_optimal
+
 
     if save_detection_images:
         # print('--- Saving detection images ---')
