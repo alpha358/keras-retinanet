@@ -1,3 +1,4 @@
+import pandas as pd
 import zipfile
 from keras_retinanet.utils.visualization import draw_box, draw_circle
 from sklearn.metrics import accuracy_score
@@ -637,7 +638,8 @@ def detector_one_sheet(
     iou_thresh = 0.5,
     p_thresh = None,
     plot_here = True,
-    aux_annot = None
+    aux_annot = None, # auxiliary annotations for comparison
+    save_detections_csv = True
     ):
 
     # Try to create report directories
@@ -661,6 +663,44 @@ def detector_one_sheet(
         N_img = N_img,
         savedir = os.path.join(report_dir, 'detections')
     )
+
+
+    if save_detections_csv:
+        table_csv = {
+            'img_name':[],
+            'x1':[],
+            'y1':[],
+            'x2':[],
+            'y2':[],
+            'p':[],
+        }
+
+        # iterate over images
+        for img_idx, probs in probs_of_boxes.items():
+
+            # get image name
+            img_name = os.path.basename(generator.image_path(img_idx))
+
+            # list of predicted bboxes for an image
+            bboxes = pred_boxes[img_idx]
+
+            # iterate over detections in image
+            for n in range(len(probs)):
+
+                # read bbox
+                x1, y1, x2, y2 = bboxes[n]
+
+                table_csv['img_name'].append(img_name)
+                table_csv['p'].append(probs[n])
+                table_csv['x1'].append(x1)
+                table_csv['y1'].append(y1)
+                table_csv['x2'].append(x2)
+                table_csv['y2'].append(y2)
+
+        df = pd.DataFrame(table_csv)
+        df.to_csv(os.path.join(report_dir, 'detections.csv'), index = False)
+
+
 
     # ------------------------- Vary probability treshold ------------------------ #
     # probs_ = np.array(list(probs_of_boxes.values())).reshape(-1)
