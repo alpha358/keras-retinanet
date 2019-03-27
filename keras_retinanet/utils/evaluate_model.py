@@ -271,7 +271,7 @@ def plot_detections(
 
             # Save detections
             if score >= 0:
-                x1, y1, x2, y2 = box.astype(int)
+                x1, y1, x2, y2 = box.astype( int )
                 detections_dict['x1'].append( x1 )
                 detections_dict['y1'].append( y1 )
                 detections_dict['x2'].append( x2 )
