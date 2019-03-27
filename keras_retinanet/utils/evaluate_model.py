@@ -688,15 +688,16 @@ def detector_one_sheet(
             # iterate over detections in image
             for n in range(len(probs)):
 
-                # read bbox
-                x1, y1, x2, y2 = bboxes[n]
+                if probs[n] >= 0:
+                    # read bbox
+                    x1, y1, x2, y2 = bboxes[n]
 
-                table_csv['img_name'].append(img_name)
-                table_csv['p'].append(probs[n])
-                table_csv['x1'].append(x1)
-                table_csv['y1'].append(y1)
-                table_csv['x2'].append(x2)
-                table_csv['y2'].append(y2)
+                    table_csv['img_name'].append(img_name)
+                    table_csv['p'].append(probs[n])
+                    table_csv['x1'].append(x1)
+                    table_csv['y1'].append(y1)
+                    table_csv['x2'].append(x2)
+                    table_csv['y2'].append(y2)
 
         df = pd.DataFrame(table_csv)
         df.to_csv(os.path.join(report_dir, 'detections.csv'), index = False)
