@@ -270,13 +270,14 @@ def plot_detections(
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
 
             # Save detections
-            x1, y1, x2, y2 = box.astype(int)
-            detections_dict['x1'].append( x1 )
-            detections_dict['y1'].append( y1 )
-            detections_dict['x2'].append( x2 )
-            detections_dict['y2'].append( y2 )
-            detections_dict['p'].append( score )
-            detections_dict['label'].append( labels_to_names[label] )
+            if score >= 0:
+                x1, y1, x2, y2 = box.astype(int)
+                detections_dict['x1'].append( x1 )
+                detections_dict['y1'].append( y1 )
+                detections_dict['x2'].append( x2 )
+                detections_dict['y2'].append( y2 )
+                detections_dict['p'].append( score )
+                detections_dict['label'].append( labels_to_names[label] )
 
             # plot boxes
             if score > p_thresh:
