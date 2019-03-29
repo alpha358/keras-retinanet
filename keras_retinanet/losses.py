@@ -18,7 +18,7 @@ import keras
 from . import backend
 
 
-def focal(alpha=0.25, gamma=2.0):
+def focal(alpha=0.25, gamma=2.0, const_multiplier = 2):
     """ Create a functor for computing the focal loss.
 
     Args
@@ -62,7 +62,7 @@ def focal(alpha=0.25, gamma=2.0):
         normalizer = keras.backend.cast(keras.backend.shape(normalizer)[0], keras.backend.floatx())
         normalizer = keras.backend.maximum(keras.backend.cast_to_floatx(1.0), normalizer)
 
-        return keras.backend.sum(cls_loss) / normalizer
+        return keras.backend.sum(cls_loss) / normalizer * const_multiplier
 
     return _focal
 

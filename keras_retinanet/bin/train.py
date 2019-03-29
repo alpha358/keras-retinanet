@@ -82,7 +82,7 @@ def model_with_weights(model, weights, skip_mismatch):
 
 
 def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0,
-                  freeze_backbone=False, lr=1e-5, config=None):
+                  freeze_backbone=False, lr=1e-5, config=None, focal_weight = 1):
     """ Creates three models (model, training_model, prediction_model).
 
     Args
@@ -126,7 +126,7 @@ def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0,
     training_model.compile(
         loss={
             'regression'    : losses.smooth_l1(),
-            'classification': losses.focal()
+            'classification': losses.focal(const_multiplier=focal_weight)
         },
         optimizer=keras.optimizers.adam(lr=lr, clipnorm=0.001)
     )
