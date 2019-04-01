@@ -193,6 +193,8 @@ class CSVGenerator(Generator):
         del_im_name = []
         del_idx = []
 
+
+
         while True:
             try:
                 _, im_name = next(e)
@@ -202,22 +204,17 @@ class CSVGenerator(Generator):
 
                     del self.image_data[im_name]
                     # self.image_data.pop(im_name)
+                    # problem: list indices change after removing elements - use search
+                    idx = np.argwhere(self.image_names == im_name)[0]
                     del self.image_names[idx]
 
                     del_idx.append(idx)
                     del_im_name.append(im_name)
 
-                    idx += 1  # img index
+                    # idx += 1  # img index
 
             except StopIteration:
                 break
-
-        # # another attempt
-        # for im_name in del_im_name:
-        #     del self.image_data[im_name]
-
-        # for idx in del_idx:
-        #     del self.image_names[idx]
 
         import pdb; pdb.set_trace()
 
