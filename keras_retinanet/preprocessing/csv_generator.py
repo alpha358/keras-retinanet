@@ -217,7 +217,7 @@ class CSVGenerator(Generator):
             except StopIteration:
                 break
 
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
 
         # while image_names.next():
         #     im_name = image_names[idx]
