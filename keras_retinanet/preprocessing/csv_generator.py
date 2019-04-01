@@ -186,18 +186,33 @@ class CSVGenerator(Generator):
         Purpose: drop not found images from image_names, image_data
         '''
         idx = 0
-        image_names = np.copy(self.image_names)
-        while image_names.next():
-            im_name = image_names[idx]
+        e = enumerate(np.copy(self.image_names))
+        # using enumeration insted of for loop
+        #   due to stop of the loop when deleting elements
+        while True:
+            try:
+                idx, im_name = next(e)
+                if not os.path.isfile(os.path.join(self.base_dir, im_name)):
+                    # img not found - removing that line
+                    print('Img not found, droping: ', im_name)
+                    del self.image_data[im_name]
+                    # self.image_data.pop(im_name)
+                    del self.image_names[idx]
+            except StopIteration:
+                break
 
-            # for im_name in image_names:  # copy to continue iterations
-            if not os.path.isfile(os.path.join(self.base_dir, im_name)):
-                # img not found - removing that line
-                print('Img not found, droping: ', im_name)
-                del self.image_data[im_name]
-                # self.image_data.pop(im_name)
-                del self.image_names[idx]
-            idx += 1 # img index
+
+        # while image_names.next():
+        #     im_name = image_names[idx]
+
+        #     # for im_name in image_names:  # copy to continue iterations
+        #     if not os.path.isfile(os.path.join(self.base_dir, im_name)):
+        #         # img not found - removing that line
+        #         print('Img not found, droping: ', im_name)
+        #         del self.image_data[im_name]
+        #         # self.image_data.pop(im_name)
+        #         del self.image_names[idx]
+        #     idx += 1 # img index
 
         import pdb; pdb.set_trace()
 
