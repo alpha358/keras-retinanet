@@ -203,35 +203,24 @@ class CSVGenerator(Generator):
                     print('Img not found, droping: ', im_name)
 
                     del self.image_data[im_name]
-                    # self.image_data.pop(im_name)
                     # problem: list indices change after removing elements - use search
-                    # idx = np.argwhere(self.image_names == im_name)[0]
                     idx = np.where(np.array(self.image_names) == im_name)[0][0]
                     del self.image_names[idx]
-
-                    # del_idx.append(idx)
-                    # del_im_name.append(im_name)
-
-                    # idx += 1  # img index
 
             except StopIteration:
                 break
 
-        # import pdb; pdb.set_trace()
 
-        # while image_names.next():
-        #     im_name = image_names[idx]
+    def set_examples_subset(self, stride):
+        '''
+        Generate a subset of examples using stride
+        '''
+        self.image_names = self.image_names[0::stride]
+        image_data_ = {}
+        for im_name in self.image_names:
+            image_data_[im_name] = self.image_data[im_name]
 
-        #     # for im_name in image_names:  # copy to continue iterations
-        #     if not os.path.isfile(os.path.join(self.base_dir, im_name)):
-        #         # img not found - removing that line
-        #         print('Img not found, droping: ', im_name)
-        #         del self.image_data[im_name]
-        #         # self.image_data.pop(im_name)
-        #         del self.image_names[idx]
-        #     idx += 1 # img index
-
-
+        self.image_data = image_data_
 
     def size(self):
         """ Size of the dataset.
