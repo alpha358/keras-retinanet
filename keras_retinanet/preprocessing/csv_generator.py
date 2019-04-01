@@ -214,7 +214,7 @@ class CSVGenerator(Generator):
         #         del self.image_names[idx]
         #     idx += 1 # img index
 
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
 
     def size(self):
         """ Size of the dataset.
