@@ -189,16 +189,26 @@ class CSVGenerator(Generator):
         e = enumerate(np.copy(self.image_names))
         # using enumeration insted of for loop
         #   due to stop of the for-loop when deleting elements
+
+        del_im_name = []
+        del_idx = []
+
         while True:
             try:
                 _, im_name = next(e)
                 if not os.path.isfile( os.path.join(self.base_dir, im_name) ):
                     # img not found - removing that line
                     print('Img not found, droping: ', im_name)
+
                     del self.image_data[im_name]
                     # self.image_data.pop(im_name)
                     del self.image_names[idx]
+
+                    del_idx.append(idx)
+                    del_im_name.append(im_name)
+
                     idx += 1  # img index
+
             except StopIteration:
                 break
 
