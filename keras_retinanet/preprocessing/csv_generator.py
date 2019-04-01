@@ -212,12 +212,12 @@ class CSVGenerator(Generator):
             except StopIteration:
                 break
 
-        # another attempt
-        for im_name in del_im_name:
-            del self.image_data[im_name]
+        # # another attempt
+        # for im_name in del_im_name:
+        #     del self.image_data[im_name]
 
-        for idx in del_idx:
-            del self.image_names[idx]
+        # for idx in del_idx:
+        #     del self.image_names[idx]
 
         import pdb; pdb.set_trace()
 
