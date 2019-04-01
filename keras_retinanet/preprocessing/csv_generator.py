@@ -215,7 +215,10 @@ class CSVGenerator(Generator):
         '''
         Generate a subset of examples using stride
         '''
+        # clean examples
         self.image_names = self.image_names[0::stride]
+
+        # clean image data
         image_data_ = {}
         for im_name in self.image_names:
             image_data_[im_name] = self.image_data[im_name]
