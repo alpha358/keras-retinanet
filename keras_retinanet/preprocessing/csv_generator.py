@@ -199,7 +199,7 @@ class CSVGenerator(Generator):
                     # self.image_data.pop(im_name)
                     del self.image_names[idx]
                     idx += 1  # img index
-            except:
+            except StopIteration:
                 break
 
         import pdb; pdb.set_trace()
