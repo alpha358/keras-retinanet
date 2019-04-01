@@ -205,11 +205,12 @@ class CSVGenerator(Generator):
                     del self.image_data[im_name]
                     # self.image_data.pop(im_name)
                     # problem: list indices change after removing elements - use search
-                    idx = np.argwhere(self.image_names == im_name)[0]
+                    # idx = np.argwhere(self.image_names == im_name)[0]
+                    idx = np.where(np.array(self.image_names) == im_name)
                     del self.image_names[idx]
 
-                    del_idx.append(idx)
-                    del_im_name.append(im_name)
+                    # del_idx.append(idx)
+                    # del_im_name.append(im_name)
 
                     # idx += 1  # img index
 
