@@ -196,6 +196,8 @@ class CSVGenerator(Generator):
                 del self.image_names[idx]
             idx += 1 # img index
 
+        import pdb; pdb.set_trace()
+
     def size(self):
         """ Size of the dataset.
         """
@@ -313,12 +315,12 @@ class Combined_CSVGenerator(Generator):
             # Compute subgenerator index and its example index
             if example_idx >= N1:
                 generator_idx = 1
-                example_idx_local = example_idx - N1
+                subgenerator_idx = example_idx - N1
             else:
                 generator_idx = 0
-                example_idx_local = example_idx
+                subgenerator_idx = example_idx
 
-            self.generator_example_indices[example_idx] = (generator_idx, example_idx_local)
+            self.generator_example_indices[example_idx] = (generator_idx, subgenerator_idx)
 
 
         # # Reshuffle
