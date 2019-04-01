@@ -211,7 +211,7 @@ class CSVGenerator(Generator):
                 break
 
 
-    def set_examples_subset(self, stride):
+    def skip_examples(self, stride):
         '''
         Generate a subset of examples using stride
         '''
