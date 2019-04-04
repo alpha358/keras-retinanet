@@ -282,7 +282,7 @@ def retinanet(
     features = create_pyramid_features(C3, C4, C5)
 
     # TODO: CHANGE BACK
-    features = features[2:]
+    features = features[1:]
     # [P3, P4, P5, P6, P7]
 
     # for all pyramid levels, run available submodels
