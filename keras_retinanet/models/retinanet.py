@@ -281,7 +281,8 @@ def retinanet(
     # compute pyramid features as per https://arxiv.org/abs/1708.02002
     features = create_pyramid_features(C3, C4, C5)
 
-    features = features[1:3]
+    # TODO: CHANGE BACK
+    features = features[2:]
     # [P3, P4, P5, P6, P7]
 
     # for all pyramid levels, run available submodels
@@ -333,9 +334,9 @@ def retinanet_bbox(
         assert_training_model(model)
 
     # compute the anchors
-    # TODO: change back
+    # TODO: CHANGE BACK
     # features = [model.get_layer(p_name).output for p_name in ['P3', 'P4', 'P5', 'P6', 'P7']]
-    features = [model.get_layer(p_name).output for p_name in ['P4', 'P5']]
+    features = [model.get_layer(p_name).output for p_name in ['P4', 'P5', 'P6', 'P7']]
     anchors  = __build_anchors(anchor_params, features)
 
     # we expect the anchors, regression and classification values as first output
