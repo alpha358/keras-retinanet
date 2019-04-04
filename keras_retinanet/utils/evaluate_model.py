@@ -193,7 +193,7 @@ def plot_detections(
         N_img = None, # n examples to process
         plot_here = False,
         savedir = None,
-        N_ZIP = 100,
+        N_ZIP = 100, # how many files to zip
         labels_to_names = {0: 'drone'},
         aux_annot = None, # auxiliary annotations
         aux_threshold = 0.5
