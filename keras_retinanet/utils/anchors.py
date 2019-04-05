@@ -224,6 +224,8 @@ def anchors_for_shape(
     """
 
     if pyramid_levels is None:
+        pyramid_levels = [4, 5, 6, 7]
+        # TODO: change back
         pyramid_levels = [3, 4, 5, 6, 7]
 
     if anchor_params is None:
