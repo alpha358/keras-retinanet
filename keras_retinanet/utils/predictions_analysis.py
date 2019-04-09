@@ -243,7 +243,7 @@ def compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations, p_mi
 
 
 
-def plot_detection_analysis(TN, TP, FN, FP, P):
+def plot_detection_analysis(TN, TP, FN, FP, p_thresh, save_folder):
 
 
     precision = (TP / (TP + FP + 1e-16))
@@ -254,29 +254,31 @@ def plot_detection_analysis(TN, TP, FN, FP, P):
     plt.ylabel('Precision')
     plt.xlabel('Recall')
     plt.grid(True)
+    plt.savefig(os.path.join(save_folder, 'recall_precision.png'))
     plt.show()
 
     plt.figure(figsize=(10, 5))
     plt.subplot(2, 2, 1)
-    plt.plot(P, TN)
+    plt.plot(p_thresh, TN)
     plt.xlabel('p_thresh')
     plt.title('True Negative')
 
     plt.subplot(2, 2, 2)
-    plt.plot(P, TP)
+    plt.plot(p_thresh, TP)
     plt.xlabel('p_thresh')
     plt.title('True Positive')
 
     plt.subplot(2, 2, 3)
-    plt.plot(P, FN)
+    plt.plot(p_thresh, FN)
     plt.xlabel('p_thresh')
     plt.title('False Negative')
 
     plt.subplot(2, 2, 4)
-    plt.plot(P, FP)
+    plt.plot(p_thresh, FP)
     plt.xlabel('p_thresh')
     plt.title('False Positive')
     plt.subplots_adjust(hspace=0.5)
+    plt.savefig(os.path.join(save_folder, 'stats.png'))
     plt.show()
 
 
@@ -311,5 +313,5 @@ if __name__ == 'main':
     with open('stats.pickle', mode='wb') as h:
         pickle.dump(detection_stats, h)
 
-
-    plot_detection_analysis(TN, TP, FN, FP, P_thresh)
+    save_folder = ''
+    plot_detection_analysis(TN, TP, FN, FP, P_thresh, save_folder)

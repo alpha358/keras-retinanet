@@ -27,7 +27,7 @@ from sklearn.utils.multiclass import unique_labels
 import matplotlib.pyplot as plt
 
 
-from predictions_analysis import *
+from keras_retinanet.utils.predictions_analysis import *
 
 # ============================================================================ #
 #                                SHOW DETECTIONS                               #
@@ -855,14 +855,15 @@ def detector_one_sheet(
         'TP': TP,
         'FN': FN,
         'FP': FP,
-        'p_thresh': p_thresh
+        'p_thresholds': p_thresholds
     }
 
     # save detections statistics
     with open('stats.pickle', mode='wb') as h:
         pickle.dump(detection_stats, h)
 
-    plot_detection_analysis(TN, TP, FN, FP, p_thresh)
+
+    plot_detection_analysis(TN, TP, FN, FP, p_thresholds, report_dir)
 
 
     return p_optimal
