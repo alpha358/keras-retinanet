@@ -847,7 +847,7 @@ def detector_one_sheet(
     true_annotations, pred_annotations = get_detection_dictionaries(true_annotations_df, pred_annotations_df)
 
     # Compute the relevant detection statistics
-    TN, TP, FN, FP, p_thresh = compute_detection_stats_vs_p_thresh(
+    TN, TP, FN, FP, p_thresholds = compute_detection_stats_vs_p_thresh(
         pred_annotations, true_annotations)
 
     # save detections statistics
