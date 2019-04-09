@@ -840,7 +840,8 @@ def detector_one_sheet(
     # ---------------------------------------------------------------------------- #
     # read annotations: true and predicted
     # pred_annotations_df = pd.read_csv('detections.csv') # allready computed
-    true_annotations_df = pd.read_csv(generator.csv_data_file)  #
+    true_annotations_df = pd.read_csv(generator.csv_data_file,
+                                        names=[ 'img_name', 'x1', 'y1', 'x2', 'y2', 'class'])
 
     # Convert dataframes  to dictionaries for speed
     true_annotations, pred_annotations = get_detection_dictionaries(true_annotations_df, pred_annotations_df)
