@@ -17,7 +17,7 @@ from keras_retinanet.utils.image import read_image_bgr, preprocess_image, resize
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 from keras_retinanet.utils.colors import label_color
 import time
-import tqdm
+from tqdm import tqdm
 import cv2
 import os
 import glob
@@ -223,7 +223,7 @@ def plot_detections(
         N_img = generator.size()
 
     # loop over examples
-    for img_idx in tqdm.tqdm(range(N_img)):
+    for img_idx in tqdm(range(N_img)):
 
         # load image
         image = generator.load_image(img_idx)
@@ -372,7 +372,7 @@ def get_detections(
     true_boxes = defaultdict(list) # list of true bboxes
     pred_boxes = defaultdict(list) # list of predicted bboxes
 
-    for img_idx in tqdm.tqdm( range(N_img) ):
+    for img_idx in tqdm( range(N_img) ):
         # load image
         image = validation_generator.load_image(img_idx)
         annotation_true = validation_generator.load_annotations(img_idx)
