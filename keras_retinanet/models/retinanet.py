@@ -282,7 +282,7 @@ def retinanet(
     features = create_pyramid_features(C3, C4, C5)
 
     # TODO: CHANGE BACK
-    features = features[1:-1]
+    # features = features[1:-1]
     # [P3, P4, P5, P6, P7]
 
     # for all pyramid levels, run available submodels
@@ -335,8 +335,8 @@ def retinanet_bbox(
 
     # compute the anchors
     # TODO: CHANGE BACK
-    # features = [model.get_layer(p_name).output for p_name in ['P3', 'P4', 'P5', 'P6', 'P7']]
-    features = [model.get_layer(p_name).output for p_name in ['P4', 'P5', 'P6']]
+    features = [model.get_layer(p_name).output for p_name in ['P3', 'P4', 'P5', 'P6', 'P7']]
+    # features = [model.get_layer(p_name).output for p_name in ['P4', 'P5', 'P6']]
     anchors  = __build_anchors(anchor_params, features)
 
     # we expect the anchors, regression and classification values as first output
