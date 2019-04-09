@@ -27,6 +27,7 @@ from sklearn.utils.multiclass import unique_labels
 import matplotlib.pyplot as plt
 
 
+from predictions_analysis import *
 
 # ============================================================================ #
 #                                SHOW DETECTIONS                               #
@@ -699,8 +700,8 @@ def detector_one_sheet(
                     table_csv['x2'].append(x2)
                     table_csv['y2'].append(y2)
 
-        df = pd.DataFrame(table_csv)
-        df.to_csv(os.path.join(report_dir, 'detections.csv'), index = False)
+        pred_annotations_df = pd.DataFrame(table_csv)
+        pred_annotations_df.to_csv(os.path.join(report_dir, 'detections.csv'), index = False)
 
 
 
@@ -832,5 +833,36 @@ def detector_one_sheet(
             labels_to_names = labels_to_names,
             aux_annot = aux_annot
         )
+
+
+    # ---------------------------------------------------------------------------- #
+    #                              Precision vs Recall                             #
+    # ---------------------------------------------------------------------------- #
+    # read annotations: true and predicted
+    # pred_annotations_df = pd.read_csv('detections.csv') # allready computed
+    true_annotations_df = pd.read_csv(generator.csv_data_file)  #
+
+    # Convert dataframes  to dictionaries for speed
+    true_annotations, pred_annotations = get_detection_dictionaries(true_annotations_df, pred_annotations_df)
+
+    # Compute the relevant detection statistics
+    TN, TP, FN, FP, p_thresh = compute_detection_stats_vs_p_thresh(
+        pred_annotations, true_annotations)
+
+    # save detections statistics
+    detection_stats = {
+        'TN': TN,
+        'TP': TP,
+        'FN': FN,
+        'FP': FP,
+        'p_thresh': p_thresh
+    }
+
+    # save detections statistics
+    with open('stats.pickle', mode='wb') as h:
+        pickle.dump(detection_stats, h)
+
+    plot_detection_analysis(TN, TP, FN, FP, p_thresh)
+
 
     return p_optimal

@@ -222,10 +222,6 @@ def compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations, p_mi
     Output:
         TN, TP, FN, FP, P
     '''
-
-    precision = []
-    recall = []
-
     TN, TP, FN, FP = [], [], [], []
 
     P = np.linspace(p_min, p_max, 50)
@@ -300,7 +296,7 @@ if __name__ == 'main':
     true_annotations, pred_annotations = get_detection_dictionaries(true_annotations_df, pred_annotations_df)
 
     # Compute the relevant detection statistics
-    TN, TP, FN, FP, P = compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations)
+    TN, TP, FN, FP, P_thresh = compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations)
 
     # save detections statistics
     detection_stats = {
@@ -308,7 +304,7 @@ if __name__ == 'main':
         'TP' : TP,
         'FN' : FN,
         'FP' : FP,
-        'P'  : P
+        'P_thresh'  : P_thresh
     }
 
     # save detections statistics
@@ -316,4 +312,4 @@ if __name__ == 'main':
         pickle.dump(detection_stats, h)
 
 
-    plot_detection_analysis(TN, TP, FN, FP, P)
+    plot_detection_analysis(TN, TP, FN, FP, P_thresh)

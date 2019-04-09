@@ -154,6 +154,8 @@ class CSVGenerator(Generator):
         self.grayscale   = grayscale
         self.bgr_to_rgb  = bgr_to_rgb
 
+        self.csv_data_file = csv_data_file
+
         # Take base_dir from annotations file if not explicitly specified.
         if self.base_dir is None:
             self.base_dir = os.path.dirname(csv_data_file)
