@@ -847,8 +847,7 @@ def detector_one_sheet(
     true_annotations, pred_annotations = get_detection_dictionaries(true_annotations_df, pred_annotations_df)
 
     # Compute the relevant detection statistics
-    TN, TP, FN, FP, p_thresholds = compute_detection_stats_vs_p_thresh(
-        pred_annotations, true_annotations)
+    TN, TP, FN, FP, p_thresholds = compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations)
 
     # save detections statistics
     detection_stats = {
@@ -860,7 +859,7 @@ def detector_one_sheet(
     }
 
     # save detections statistics
-    with open('stats.pickle', mode='wb') as h:
+    with open(os.path.join(report_dir, 'stats.pickle'), mode='wb') as h:
         pickle.dump(detection_stats, h)
 
 
