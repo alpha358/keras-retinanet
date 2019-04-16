@@ -59,7 +59,7 @@ def get_gt_annotations(dataset_name):
 # pred_annotations_df = pd.read_csv(os.path.join('predictions', names[0], datasets[0], 'detections.csv'))
 
 
-# -------------------- Concerting dataframe to dictionary -------------------- #
+# -------------------- Converting dataframe to dictionary -------------------- #
 
 def get_detection_dictionaries(true_annotations_df, pred_annotations_df):
     '''
@@ -248,7 +248,18 @@ def plot_detection_analysis(TN, TP, FN, FP, p_thresh, save_folder):
 
     precision = (TP / (TP + FP + 1e-16))
     recall = (TP / (TP + FN + 1e-16))
+    accuracy = (TP + TN) / (TP + TN + FP + FN + 1e-16)
 
+    # --------------------------------- accuracy --------------------------------- #
+    plt.figure(figsize=(7, 4))
+    plt.plot(p_thresh, accuracy)
+    plt.ylabel('Accuracy')
+    plt.xlabel('p_thresh')
+    plt.grid(True)
+    plt.savefig(os.path.join(save_folder, 'accuracy_.png'))
+    plt.show()
+
+    # ---------------------------- recall vs precision --------------------------- #
     plt.figure(figsize=(7, 4))
     plt.plot(recall, precision)
     plt.ylabel('Precision')
@@ -257,6 +268,7 @@ def plot_detection_analysis(TN, TP, FN, FP, p_thresh, save_folder):
     plt.savefig(os.path.join(save_folder, 'recall_precision.png'))
     plt.show()
 
+    # ------------------------------ Detection Stats ----------------------------- #
     plt.figure(figsize=(10, 5))
     plt.subplot(2, 2, 1)
     plt.plot(p_thresh, TN)
