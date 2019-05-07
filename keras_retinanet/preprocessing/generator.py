@@ -231,7 +231,7 @@ class Generator(keras.utils.Sequence):
             if self.augmenter_imgaug:
                 # --------------------- apply transformation to image --------------------- #
                 # imgaug augmentation
-                image = apply_transform(transform, image, self.transform_parameters)
+                # image = apply_transform(transform, image, self.transform_parameters)
                 augmenter_det = self.augmenter_imgaug.to_deterministic()
                 # augmentation
                 image = augmenter_det.augment_image(image) # buvo augment_images
