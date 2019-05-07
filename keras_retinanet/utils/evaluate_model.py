@@ -34,22 +34,22 @@ from keras_retinanet.utils.predictions_analysis import *
 # ============================================================================ #
 
 from matplotlib import animation
-from JSAnimation import IPython_display
+# from JSAnimation import IPython_display
 
-def plot_movie_js(image_array):
-    dpi = 75.0
-    xpixels, ypixels = image_array[0].shape[0], image_array[0].shape[1]
-    fig = plt.figure(figsize=(ypixels/dpi, xpixels/dpi), dpi=dpi)
+# def plot_movie_js(image_array):
+#     dpi = 75.0
+#     xpixels, ypixels = image_array[0].shape[0], image_array[0].shape[1]
+#     fig = plt.figure(figsize=(ypixels/dpi, xpixels/dpi), dpi=dpi)
 
-#     fig = plt.figure(figsize=(12, 12), dpi=45)
-    im = plt.figimage(image_array[0])
+# #     fig = plt.figure(figsize=(12, 12), dpi=45)
+#     im = plt.figimage(image_array[0])
 
-    def animate(i):
-        im.set_array(image_array[i])
-        return (im,)
+#     def animate(i):
+#         im.set_array(image_array[i])
+#         return (im,)
 
-    anim = animation.FuncAnimation(fig, animate, frames=len(image_array))
-    display(IPython_display.display_animation(anim))
+#     anim = animation.FuncAnimation(fig, animate, frames=len(image_array))
+#     display(IPython_display.display_animation(anim))
 
 
 # ============================================================================ #
