@@ -20,6 +20,8 @@ import warnings
 
 import keras
 
+import imgaug as ia
+
 from ..utils.anchors import (
     anchor_targets_bbox,
     anchors_for_shape,
@@ -36,6 +38,42 @@ from ..utils.image import (
 from ..utils.transform import transform_aabb
 
 
+# ------------------------------- imgaug tools ------------------------------- #
+def to_imgaug_bboxes(bboxes, img_shape):
+    '''
+        Convert plain bboxes to imgaug bboxes.
+        Input: []
+        Output: []
+    '''
+    bboxes_list = []
+    for bbox in bboxes:
+        x1, y1, x2, y2 = bbox
+        bboxes_list.append(
+            ia.BoundingBox(x1=x1, y1=y1, x2=x2, y2=y2)
+        )
+
+    return ia.BoundingBoxesOnImage(bboxes_list, shape=img_shape)
+
+
+def to_plain_bboxes(bboxes_imgaug):
+    '''
+    Convert plain (initial) bboxes to imgaug format.
+        Input: list of ia.BoundingBox
+        Output: list of bbox tuples
+    '''
+    bboxes_list = []
+    for bbox in bboxes_imgaug.bounding_boxes:
+        # TODO: test
+        x1, y1, x2, y2 = bbox.x1, bbox.y1, bbox.x2, bbox.y2
+        bboxes_list.append((x1, y1, x2, y2))
+
+    return bboxes_list
+
+# ------------------------------------- - ------------------------------------ #
+
+# ---------------------------------------------------------------------------- #
+#                                Generator Class                               #
+# ---------------------------------------------------------------------------- #
 class Generator(keras.utils.Sequence):
     """ Abstract generator class.
     """
@@ -52,7 +90,8 @@ class Generator(keras.utils.Sequence):
         compute_anchor_targets=anchor_targets_bbox,
         compute_shapes=guess_shapes,
         preprocess_image=preprocess_image,
-        config=None
+        config = None,
+        augmenter_imgaug = None # imgaug augmenter
     ):
         """ Initialize Generator object.
 
@@ -79,6 +118,7 @@ class Generator(keras.utils.Sequence):
         self.compute_shapes         = compute_shapes
         self.preprocess_image       = preprocess_image
         self.config                 = config
+        self.augmenter_imgaug       = augmenter_imgaug
 
         # Define groups
         self.group_images()
@@ -187,13 +227,35 @@ class Generator(keras.utils.Sequence):
             if transform is None:
                 transform = adjust_transform_for_image(next(self.transform_generator), image, self.transform_parameters.relative_translation)
 
-            # apply transformation to image
-            image = apply_transform(transform, image, self.transform_parameters)
 
-            # Transform the bounding boxes in the annotations.
-            annotations['bboxes'] = annotations['bboxes'].copy()
-            for index in range(annotations['bboxes'].shape[0]):
-                annotations['bboxes'][index, :] = transform_aabb(transform, annotations['bboxes'][index, :])
+            if self.augmenter_imgaug:
+                # --------------------- apply transformation to image --------------------- #
+                # imgaug augmentation
+                image = apply_transform(transform, image, self.transform_parameters)
+                augmenter_det = self.augmenter_imgaug.to_deterministic()
+                # augmentation
+                image = augmenter_det.augment_image(image) # buvo augment_images
+
+                # ---------------------------- bboxes augmentation --------------------------- #
+                # convert bboxes to imgaug format
+                bboxes_imgaug = to_imgaug_bboxes(annotations['bboxes'].copy(), image.shape)
+                # augment the bboxes
+                bboxes_imgaug = augmenter_det.augment_bounding_boxes(bboxes_imgaug)
+
+                # remove bboxes that are outside of the image
+                bboxes_imgaug = [bbox.remove_out_of_image().cut_out_of_image()
+                                    for bbox in bboxes_imgaug]
+
+                # update the annotations
+                annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug)
+            else:
+                # -------------------------- old style augmentation -------------------------- #
+                # image augmentation
+                image = apply_transform(transform, image, self.transform_parameters)
+                # Transform the bounding boxes in the annotations.
+                annotations['bboxes'] = annotations['bboxes'].copy()
+                for index in range(annotations['bboxes'].shape[0]):
+                    annotations['bboxes'][index, :] = transform_aabb(transform, annotations['bboxes'][index, :])
 
         return image, annotations
 
@@ -205,9 +267,11 @@ class Generator(keras.utils.Sequence):
 
         for index in range(len(image_group)):
             # transform a single group entry
-            image_group[index], annotations_group[index] = self.random_transform_group_entry(image_group[index], annotations_group[index])
+            image_group[index], annotations_group[index] = self.random_transform_group_entry(
+                image_group[index], annotations_group[index])
 
         return image_group, annotations_group
+
 
     def resize_image(self, image):
         """ Resize an image using image_min_side and image_max_side.
