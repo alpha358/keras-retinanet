@@ -222,33 +222,37 @@ class Generator(keras.utils.Sequence):
     def random_transform_group_entry(self, image, annotations, transform=None):
         """ Randomly transforms image and annotation.
         """
-        # randomly transform both image and annotations
-        if transform is not None or self.transform_generator:
-            if transform is None:
-                transform = adjust_transform_for_image(next(self.transform_generator), image, self.transform_parameters.relative_translation)
 
+        if self.augmenter_imgaug:
+            # --------------------- apply transformation to image --------------------- #
+            # imgaug augmentation
+            # image = apply_transform(transform, image, self.transform_parameters)
+            augmenter_det = self.augmenter_imgaug.to_deterministic()
 
-            if self.augmenter_imgaug:
-                # --------------------- apply transformation to image --------------------- #
-                # imgaug augmentation
-                # image = apply_transform(transform, image, self.transform_parameters)
-                augmenter_det = self.augmenter_imgaug.to_deterministic()
-                # augmentation
-                image = augmenter_det.augment_image(image) # buvo augment_images
+            # augmentation
+            image = augmenter_det.augment_image(image) # buvo augment_images
 
-                # ---------------------------- bboxes augmentation --------------------------- #
-                # convert bboxes to imgaug format
-                bboxes_imgaug = to_imgaug_bboxes(annotations['bboxes'].copy(), image.shape)
-                # augment the bboxes
-                bboxes_imgaug = augmenter_det.augment_bounding_boxes(bboxes_imgaug)
+            # ---------------------------- bboxes augmentation --------------------------- #
+            # convert bboxes to imgaug format
+            bboxes_imgaug = to_imgaug_bboxes(annotations['bboxes'].copy(), image.shape)
 
-                # remove bboxes that are outside of the image
-                bboxes_imgaug = [bbox.remove_out_of_image().cut_out_of_image()
-                                    for bbox in bboxes_imgaug]
+            # augment the bboxes
+            bboxes_imgaug = augmenter_det.augment_bounding_boxes(bboxes_imgaug)
 
-                # update the annotations
-                annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug)
-            else:
+            # remove bboxes that are outside of the image
+            bboxes_imgaug = [bbox.remove_out_of_image().cut_out_of_image()
+                                for bbox in bboxes_imgaug]
+
+            # update the annotations
+            annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug)
+        else:
+            # randomly transform both image and annotations
+            if transform is not None or self.transform_generator:
+
+                if transform is None:
+                    transform = adjust_transform_for_image(next(
+                        self.transform_generator), image, self.transform_parameters.relative_translation)
+
                 # -------------------------- old style augmentation -------------------------- #
                 # image augmentation
                 image = apply_transform(transform, image, self.transform_parameters)
