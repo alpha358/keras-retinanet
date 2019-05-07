@@ -62,7 +62,8 @@ def to_plain_bboxes(bboxes_imgaug):
         Output: list of bbox tuples
     '''
     bboxes_list = []
-    for bbox in bboxes_imgaug.bounding_boxes:
+    # for bbox in bboxes_imgaug.bounding_boxes:
+    for bbox in bboxes_imgaug:
         # TODO: test
         x1, y1, x2, y2 = bbox.x1, bbox.y1, bbox.x2, bbox.y2
         bboxes_list.append((x1, y1, x2, y2))
@@ -241,7 +242,7 @@ class Generator(keras.utils.Sequence):
 
             # remove bboxes that are outside of the image
             bboxes_imgaug = [bbox.remove_out_of_image().cut_out_of_image()
-                                for bbox in bboxes_imgaug]
+                             for bbox in bboxes_imgaug.bounding_boxes]
 
             # update the annotations
             annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug)
