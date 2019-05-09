@@ -63,7 +63,7 @@ def to_plain_bboxes(bboxes_imgaug):
     '''
     bboxes_list = []
     # for bbox in bboxes_imgaug.bounding_boxes:
-    for bbox in bboxes_imgaug:
+    for bbox in bboxes_imgaug.bounding_boxes:
         # TODO: test
         x1, y1, x2, y2 = bbox.x1, bbox.y1, bbox.x2, bbox.y2
         bboxes_list.append((x1, y1, x2, y2))
@@ -225,7 +225,7 @@ class Generator(keras.utils.Sequence):
         """
 
         if self.augmenter_imgaug:
-            # --------------------- apply transformation to image --------------------- #
+            # --------------------- apply transformation to image ------------------------ #
             # imgaug augmentation
             # image = apply_transform(transform, image, self.transform_parameters)
             augmenter_det = self.augmenter_imgaug.to_deterministic()
@@ -241,11 +241,12 @@ class Generator(keras.utils.Sequence):
             bboxes_imgaug = augmenter_det.augment_bounding_boxes(bboxes_imgaug)
 
             # remove bboxes that are outside of the image
-            bboxes_imgaug = [bbox.remove_out_of_image().cut_out_of_image()
-                             for bbox in bboxes_imgaug.bounding_boxes]
+            bboxes_imgaug = bboxes_imgaug.remove_out_of_image().cut_out_of_image()
+            # bboxes_imgaug = [bbox.remove_out_of_image().cut_out_of_image()
+            #                  for bbox in bboxes_imgaug]  # .bounding_boxes
 
             # update the annotations
-            annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug)
+            annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug.bounding_boxes)
         else:
             # randomly transform both image and annotations
             if transform is not None or self.transform_generator:
