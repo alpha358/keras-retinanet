@@ -235,7 +235,7 @@ class Generator(keras.utils.Sequence):
             # Recasting image as np array after augmentation
             # CV2 sometimes fails to draw on the image after augmentation
             # More details: https: // stackoverflow.com/questions/49571138/cant-draw-box-when-call-cv2-rectangle
-            image = np.array(image[:, ::-1])
+            image = np.array(image)
 
             # ---------------------------- bboxes augmentation --------------------------- #
             # convert bboxes to imgaug format
