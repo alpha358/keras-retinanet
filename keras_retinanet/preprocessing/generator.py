@@ -65,8 +65,8 @@ def to_plain_bboxes(bboxes_imgaug):
     # for bbox in bboxes_imgaug.bounding_boxes:
     for bbox in bboxes_imgaug.bounding_boxes:
         # TODO: test
-        x1, y1, x2, y2 = bbox.x1, bbox.y1, bbox.x2, bbox.y2
-        bboxes_list.append((x1, y1, x2, y2))
+        x1, y1, x2, y2 = np.array([bbox.x1, bbox.y1, bbox.x2, bbox.y2], dtype=np.int)
+        bboxes_list.append( (x1, y1, x2, y2) )
 
     return bboxes_list
 
@@ -245,8 +245,12 @@ class Generator(keras.utils.Sequence):
             # bboxes_imgaug = [bbox.remove_out_of_image().cut_out_of_image()
             #                  for bbox in bboxes_imgaug]  # .bounding_boxes
 
-            # update the annotations
+
+            # -------------------------- update the annotations -------------------------- #
             annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug)
+            # for bbox in to_plain_bboxes(bboxes_imgaug):
+
+
         else:
             # randomly transform both image and annotations
             if transform is not None or self.transform_generator:
