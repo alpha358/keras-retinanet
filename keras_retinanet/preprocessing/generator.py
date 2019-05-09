@@ -241,7 +241,7 @@ class Generator(keras.utils.Sequence):
             bboxes_imgaug = augmenter_det.augment_bounding_boxes(bboxes_imgaug)
 
             # remove bboxes that are outside of the image
-            bboxes_imgaug = bboxes_imgaug.remove_out_of_image().cut_out_of_image()
+            # bboxes_imgaug = bboxes_imgaug.remove_out_of_image().cut_out_of_image()
             # bboxes_imgaug = [bbox.remove_out_of_image().cut_out_of_image()
             #                  for bbox in bboxes_imgaug]  # .bounding_boxes
 
