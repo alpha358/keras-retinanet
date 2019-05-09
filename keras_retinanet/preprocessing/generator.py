@@ -247,7 +247,7 @@ class Generator(keras.utils.Sequence):
 
 
             # -------------------------- update the annotations -------------------------- #
-            annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug)
+            annotations['bboxes'] = np.array(to_plain_bboxes(bboxes_imgaug))
             # for bbox in to_plain_bboxes(bboxes_imgaug):
 
 
