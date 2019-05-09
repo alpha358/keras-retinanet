@@ -254,6 +254,9 @@ class Generator(keras.utils.Sequence):
             # -------------------------- update the annotations -------------------------- #
             # annotations['bboxes'] = np.array(to_plain_bboxes(bboxes_imgaug))
             annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug)
+
+            # TODO: test for bbox distortion
+            annotations['bboxes'] = np.array(annotations['bboxes'], dtype=np.float)
             # for bbox in to_plain_bboxes(bboxes_imgaug):
 
 
