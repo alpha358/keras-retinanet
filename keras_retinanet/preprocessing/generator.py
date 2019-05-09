@@ -235,7 +235,7 @@ class Generator(keras.utils.Sequence):
             # Recasting image as np array after augmentation
             # CV2 sometimes fails to draw on the image after augmentation
             # More details: https: // stackoverflow.com/questions/49571138/cant-draw-box-when-call-cv2-rectangle
-            # image = np.array(image)
+            image = np.array(image) # H1: this flips the horizontal axis in the image ?
 
             # ---------------------------- bboxes augmentation --------------------------- #
             # convert bboxes to imgaug format
@@ -245,7 +245,6 @@ class Generator(keras.utils.Sequence):
             bboxes_imgaug = augmenter_det.augment_bounding_boxes(bboxes_imgaug)
 
             # remove bboxes that are outside of the image
-            # H1: may be a problem
             bboxes_imgaug = bboxes_imgaug.remove_out_of_image().cut_out_of_image()
             # bboxes_imgaug = [bbox.remove_out_of_image().cut_out_of_image()
             #                  for bbox in bboxes_imgaug]  # .bounding_boxes
