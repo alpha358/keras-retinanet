@@ -246,7 +246,7 @@ class Generator(keras.utils.Sequence):
             #                  for bbox in bboxes_imgaug]  # .bounding_boxes
 
             # update the annotations
-            annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug.bounding_boxes)
+            annotations['bboxes'] = to_plain_bboxes(bboxes_imgaug)
         else:
             # randomly transform both image and annotations
             if transform is not None or self.transform_generator:
