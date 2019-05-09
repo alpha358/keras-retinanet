@@ -236,7 +236,7 @@ class Generator(keras.utils.Sequence):
             # CV2 sometimes fails to draw on the image after augmentation
             # More details: https: // stackoverflow.com/questions/49571138/cant-draw-box-when-call-cv2-rectangle
             image = np.array(image) # H1: this flips the horizontal axis in the image ?
-            image = np.flip(image, 1) # correct for the flip
+            # image = np.flip(image, 1) # correct for the flip
 
             # ---------------------------- bboxes augmentation --------------------------- #
             # convert bboxes to imgaug format
