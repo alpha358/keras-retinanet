@@ -48,13 +48,16 @@ class DroneReportGenerator(Generator):
         drone_paths,
         bird_paths,
         epoch_size,
-        augmenter = None):
+        augmenter = None,
+        n_batches = 20
+        ):
 
         # Set image paths
         self.background_paths = background_paths
         self.drone_paths = drone_paths
         self.bird_paths = bird_paths
         self.epoch_size = epoch_size
+        self.n_batches = n_batches
         self.max_n_birds = 2
 
         # Create inserter objects
@@ -250,3 +253,13 @@ class DroneReportGenerator(Generator):
         targets = self.compute_targets(image_group, annotations_group)
 
         return inputs, targets
+
+    # ---------------------------------------------------------------------------- #
+    #                                     hacks                                    #
+    # ---------------------------------------------------------------------------- #
+    def __len__(self):
+        """
+        Number of batches for generator.
+        """
+        return self.n_batches
+        # return len(self.groups)
