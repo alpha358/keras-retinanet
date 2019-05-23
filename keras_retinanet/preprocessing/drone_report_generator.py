@@ -141,11 +141,11 @@ class DroneReportGenerator(Generator):
         # Select random background image
         bg_idx = np.random.randint(0, len(self.background_paths) - 1 )
         bg_img = cv2.imread(self.background_paths[bg_idx])
+        images = [bg_img]
 
 
         # Insert birds
         n_birds = np.random.randint(0, self.max_n_birds)
-        images = [bg_img]
         for n in range(n_birds):
             images, _ = self.bird_inserter.insert_images(images)
 
@@ -158,16 +158,8 @@ class DroneReportGenerator(Generator):
         y1 = bboxes[0].bounding_boxes[0].y1_int
         x2 = bboxes[0].bounding_boxes[0].x2_int
         y2 = bboxes[0].bounding_boxes[0].y2_int
-        # annotations = {'labels': np.empty((0,)), 'bboxes': np.empty((0, 4))}
-        # annotations['labels'] = np.concatenate((annotations['labels'], [self.name_to_label('drone')]))
-
-        # annotations['bboxes'] = np.concatenate((annotations['bboxes'], [[
-        #             float(y1), float(x1),
-        #             float(x2), float(y2),
-        #         ]]))
 
         # return 0-th image
-
         return images[0], (x1, y1, x2, y2)
 
 
