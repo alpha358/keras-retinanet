@@ -65,7 +65,8 @@ class DroneReportGenerator(Generator):
         self.max_n_birds = 2
         self.augmenter_imgaug = augmenter_imgaug
         self.transform_generator = transform_generator
-
+        transform_generator
+        
 
         # Create inserter objects
         self.drone_inserter = ImageInserter(
