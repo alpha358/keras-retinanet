@@ -146,10 +146,13 @@ class DroneReportGenerator(Generator):
         # Insert birds
         n_birds = np.random.randint(0, self.max_n_birds)
         for n in range(n_birds):
-            img, _ = self.bird_inserter.insert_images(bg_img)
+            if n==0:
+                images, _ = self.bird_inserter.insert_images([bg_img])
+            else:
+                images, _ = self.bird_inserter.insert_images(images)
 
         # Insert drone
-        img, bboxes = self.drone_inserter.insert_images(img)
+        images, bboxes = self.drone_inserter.insert_images(images)
 
 
         # ----------------------------- BBox annotations ----------------------------- #
@@ -165,8 +168,9 @@ class DroneReportGenerator(Generator):
         #             float(x2), float(y2),
         #         ]]))
 
+        # return 0-th image
 
-        return img, (x1, y1, x2, y2)
+        return images[0], (x1, y1, x2, y2)
 
 
 
