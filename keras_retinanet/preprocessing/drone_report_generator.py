@@ -50,7 +50,8 @@ class DroneReportGenerator(Generator):
         epoch_size,
         batch_size = 8,
         augmenter = None,
-        n_batches = 20
+        n_batches = 20,
+        augmenter_imgaug = None
         ):
 
         # Set image paths
@@ -61,6 +62,7 @@ class DroneReportGenerator(Generator):
         self.batch_size = batch_size
         self.n_batches = n_batches
         self.max_n_birds = 2
+        self.augmenter_imgaug = augmenter_imgaug
 
         # Create inserter objects
         self.drone_inserter = ImageInserter(
