@@ -91,7 +91,7 @@ class DroneReportGenerator(Generator):
         # images, bboxes = img_inserter.insert_images(images_bgr)
 
         # init super-class
-        super(CSVGenerator, self).__init__(**kwargs)
+        super(DroneReportGenerator, self).__init__(**kwargs)
 
     # ----------------------------- Mandatory methods ---------------------------- #
     def size(self):
