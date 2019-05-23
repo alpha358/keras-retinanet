@@ -145,11 +145,9 @@ class DroneReportGenerator(Generator):
 
         # Insert birds
         n_birds = np.random.randint(0, self.max_n_birds)
+        images = [bg_img]
         for n in range(n_birds):
-            if n==0:
-                images, _ = self.bird_inserter.insert_images([bg_img])
-            else:
-                images, _ = self.bird_inserter.insert_images(images)
+            images, _ = self.bird_inserter.insert_images(images)
 
         # Insert drone
         images, bboxes = self.drone_inserter.insert_images(images)
