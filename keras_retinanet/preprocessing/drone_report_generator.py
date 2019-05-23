@@ -52,7 +52,8 @@ class DroneReportGenerator(Generator):
         augmenter = None,
         n_batches = 20,
         augmenter_imgaug = None,
-        transform_generator = None
+        transform_generator = None,
+        **kwargs,
         ):
 
         # Set image paths
