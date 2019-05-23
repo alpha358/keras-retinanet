@@ -380,6 +380,7 @@ class Generator(keras.utils.Sequence):
 
     def compute_input_output(self, group):
         """ Compute inputs and target outputs for the network.
+        group --- list of indices of images in a group
         """
         # load images and annotations
         image_group       = self.load_image_group(group)
@@ -412,8 +413,10 @@ class Generator(keras.utils.Sequence):
     def __getitem__(self, index):
         """
         Keras sequence method for generating batches.
+
+        group --- a list for img indices in one group
         """
-        group = self.groups[index]
+        group = self.groups[index] # H1: maybe here was the problem
         inputs, targets = self.compute_input_output(group)
 
         return inputs, targets
