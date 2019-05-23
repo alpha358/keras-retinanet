@@ -14,7 +14,7 @@ import cv2
 from os.path import join
 from glob import glob
 
-from image_insert_class import  ImageInserter
+from .image_insert_class import  ImageInserter
 
 
 
