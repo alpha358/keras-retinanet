@@ -58,6 +58,7 @@ class DroneReportGenerator(Generator):
         self.drone_paths = drone_paths
         self.bird_paths = bird_paths
         self.epoch_size = epoch_size
+        self.batch_size = batch_size
         self.n_batches = n_batches
         self.max_n_birds = 2
 
