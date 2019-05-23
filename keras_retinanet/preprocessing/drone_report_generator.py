@@ -90,6 +90,9 @@ class DroneReportGenerator(Generator):
         # images, bboxes = img_inserter.insert_images(images_bgr)
         # images, bboxes = img_inserter.insert_images(images_bgr)
 
+        # init super-class
+        super(CSVGenerator, self).__init__(**kwargs)
+
     # ----------------------------- Mandatory methods ---------------------------- #
     def size(self):
         """ Size of the dataset.
