@@ -48,6 +48,7 @@ class DroneReportGenerator(Generator):
         drone_paths,
         bird_paths,
         epoch_size,
+        batch_size = 8,
         augmenter = None,
         n_batches = 20
         ):
