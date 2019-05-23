@@ -147,7 +147,7 @@ class DroneReportGenerator(Generator):
         return None
 
 
-    def generate_example(self):
+    def generate_example(self, n):
         """ Generate a single example
             Taking random image and background.
         """
@@ -173,8 +173,17 @@ class DroneReportGenerator(Generator):
         x2 = bboxes[0].bounding_boxes[0].x2_int
         y2 = bboxes[0].bounding_boxes[0].y2_int
 
+        annotations = {'labels': np.empty((0,)), 'bboxes': np.empty((0, 4))}
+        annotations['labels'] = np.concatenate((annotations['labels'], [self.name_to_label('drone')]))
+        annotations['bboxes'] = np.concatenate((annotations['bboxes'], [[
+            x1, y1,
+            x2, y2,
+        ]]))
+
+
+
         # return 0-th image
-        return images[0], (x1, y1, x2, y2)
+        return images[0], annotations
 
 
 
@@ -214,7 +223,8 @@ class DroneReportGenerator(Generator):
         for _ in range(n_elements):
 
             # load example
-            img, (x1, y1, x2, y2) = self.generate_example()
+            img, annots = self.generate_example(n = 1) # n is ignored here
+            (x1, y1, x2, y2) = annots['bboxes'][0]   #FIXME: assuming single drone.
 
             # append image
             image_group.append(img)

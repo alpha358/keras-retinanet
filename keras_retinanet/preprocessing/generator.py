@@ -177,6 +177,17 @@ class Generator(keras.utils.Sequence):
         """
         raise NotImplementedError('load_annotations method not implemented')
 
+
+    def generate_example(self, image_index):
+        ''' Generate a sigle example.
+
+            Return (img, annotations)
+            Used in later eval.py
+        '''
+        return self.load_image(image_index), self.load_annotations(image_index)
+
+
+
     def load_annotations_group(self, group):
         """ Load annotations for all images in group.
         """
