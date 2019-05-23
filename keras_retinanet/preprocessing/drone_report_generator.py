@@ -263,3 +263,16 @@ class DroneReportGenerator(Generator):
         """
         return self.n_batches
         # return len(self.groups)
+
+    def __getitem__(self, index):
+        """
+        Keras sequence method for generating batches.
+
+        group --- a list for img indices in one group
+        """
+        group = np.random.randint(0, high=self.epoch_size, size=self.batch_size)
+
+        # group = self.groups[index] # H1: maybe here was the problem
+        inputs, targets = self.compute_input_output(group)
+
+        return inputs, targets
