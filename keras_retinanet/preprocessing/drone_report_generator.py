@@ -184,7 +184,10 @@ class DroneReportGenerator(Generator):
 
         #
         if self.grayscale:
-            images[0] = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
+            gray_img = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
+            images[0][:,:, 0] = gray_img
+            images[0][:,:, 1] = gray_img
+            images[0][:,:, 2] = gray_img
 
         # return 0-th image
         return images[0], annotations
