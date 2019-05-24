@@ -49,10 +49,11 @@ class DroneReportGenerator(Generator):
         bird_paths,
         epoch_size,
         batch_size = 8,
-        augmenter = None,
+        # augmenter = None,
         n_batches = 20,
-        augmenter_imgaug = None,
+        # augmenter_imgaug = None,
         transform_generator = None,
+        grayscale = False,
         **kwargs,
         ):
 
@@ -64,7 +65,8 @@ class DroneReportGenerator(Generator):
         self.batch_size = batch_size
         self.n_batches = n_batches
         self.max_n_birds = 2
-        self.augmenter_imgaug = augmenter_imgaug
+        self.grayscale = grayscale
+        # self.augmenter_imgaug = augmenter_imgaug
         self.transform_generator = transform_generator
 
 
@@ -180,7 +182,9 @@ class DroneReportGenerator(Generator):
             x2, y2,
         ]]))
 
-
+        #
+        if self.grayscale:
+            images[0] = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
 
         # return 0-th image
         return images[0], annotations
