@@ -295,9 +295,8 @@ class Generator(keras.utils.Sequence):
         # --------------------------------- Grayscale -------------------------------- #
         if self.grayscale:
             # Assume BGR order, convert to grayscale
-            img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-            # img_gray = np.mean(img, axis = 2) # simple solution
+            # img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            img_gray = np.mean(img, axis = 2) # simple solution
             image[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
             image[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
             image[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
