@@ -19,6 +19,7 @@ import random
 import warnings
 
 import keras
+import cv2
 
 import imgaug as ia
 
