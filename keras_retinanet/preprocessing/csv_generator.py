@@ -132,7 +132,7 @@ class CSVGenerator(Generator):
         csv_data_file,
         csv_class_file,
         base_dir=None,
-        grayscale=False,
+        # grayscale=False,
         bgr_to_rgb = False,
         augmenter = None, # non-geometric augmenter
         **kwargs
@@ -152,7 +152,7 @@ class CSVGenerator(Generator):
         self.base_dir    = base_dir
         self.augmenter   = augmenter
 
-        self.grayscale   = grayscale
+        # self.grayscale   = grayscale
         self.bgr_to_rgb  = bgr_to_rgb
 
         self.csv_data_file = csv_data_file
@@ -278,15 +278,15 @@ class CSVGenerator(Generator):
         if self.bgr_to_rgb:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        if self.grayscale:
+        # if self.grayscale:
 
-            # Assume BGR order, convert to grayscale
-            img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        #     # Assume BGR order, convert to grayscale
+        #     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-            # img_gray = np.mean(img, axis = 2) # simple solution
-            img[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
-            img[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
-            img[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
+        #     # img_gray = np.mean(img, axis = 2) # simple solution
+        #     img[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
+        #     img[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
+        #     img[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
 
         # if self.augmenter:
         #     img = self.augmenter(img)
