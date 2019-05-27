@@ -269,6 +269,24 @@ def plot_detection_analysis(TN, TP, FN, FP, p_thresh, save_folder):
     plt.savefig(os.path.join(save_folder, 'accuracy_.png'))
     plt.show()
 
+    # --------------------------------- recall --------------------------------- #
+    plt.figure(figsize=(7, 4))
+    plt.plot(p_thresh, recall)
+    plt.ylabel('Recall')
+    plt.xlabel('p_thresh')
+    plt.grid(True)
+    plt.savefig(os.path.join(save_folder, 'recall_.png'))
+    plt.show()
+
+    # --------------------------------- precission --------------------------------- #
+    plt.figure(figsize=(7, 4))
+    plt.plot(p_thresh, precision)
+    plt.ylabel('Precision')
+    plt.xlabel('p_thresh')
+    plt.grid(True)
+    plt.savefig(os.path.join(save_folder, 'precision_.png'))
+    plt.show()
+
     # ---------------------------- recall vs precision --------------------------- #
     plt.figure(figsize=(7, 4))
     plt.plot(recall, precision)
