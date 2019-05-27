@@ -92,7 +92,8 @@ class Generator(keras.utils.Sequence):
         compute_shapes=guess_shapes,
         preprocess_image=preprocess_image,
         config = None,
-        augmenter_imgaug = None # imgaug augmenter
+        augmenter_imgaug = None, # imgaug augmenter
+        grayscale = False
     ):
         """ Initialize Generator object.
 
@@ -120,6 +121,7 @@ class Generator(keras.utils.Sequence):
         self.preprocess_image       = preprocess_image
         self.config                 = config
         self.augmenter_imgaug       = augmenter_imgaug
+        self.grayscale              = grayscale
 
         # Define groups
         self.group_images()
@@ -249,6 +251,7 @@ class Generator(keras.utils.Sequence):
             image = np.array(image) # H1: this flips the horizontal axis in the image ?
             # image = np.flip(image, 1) # correct for the flip
 
+
             # ---------------------------- bboxes augmentation --------------------------- #
             # convert bboxes to imgaug format
             bboxes_imgaug = to_imgaug_bboxes(annotations['bboxes'].copy(), image.shape)
@@ -286,6 +289,17 @@ class Generator(keras.utils.Sequence):
                 annotations['bboxes'] = annotations['bboxes'].copy()
                 for index in range(annotations['bboxes'].shape[0]):
                     annotations['bboxes'][index, :] = transform_aabb(transform, annotations['bboxes'][index, :])
+
+
+        # --------------------------------- Grayscale -------------------------------- #
+        if self.grayscale:
+            # Assume BGR order, convert to grayscale
+            img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+            # img_gray = np.mean(img, axis = 2) # simple solution
+            image[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
+            image[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
+            image[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
 
         return image, annotations
 

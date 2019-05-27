@@ -641,7 +641,8 @@ def detector_one_sheet(
     p_thresh = None,
     plot_here = True,
     aux_annot = None, # auxiliary annotations for comparison
-    save_detections_csv = True
+    save_detections_csv = True,
+    csv_fname = 'detections.csv'
     ):
 
     # Try to create report directories
@@ -701,7 +702,7 @@ def detector_one_sheet(
                     table_csv['y2'].append(y2)
 
         pred_annotations_df = pd.DataFrame(table_csv)
-        pred_annotations_df.to_csv(os.path.join(report_dir, 'detections.csv'), index = False)
+        pred_annotations_df.to_csv(os.path.join(report_dir, csv_fname), index = False)
 
 
 

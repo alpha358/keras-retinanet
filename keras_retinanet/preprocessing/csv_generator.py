@@ -288,8 +288,8 @@ class CSVGenerator(Generator):
             img[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
             img[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
 
-        if self.augmenter:
-            img = self.augmenter(img)
+        # if self.augmenter:
+        #     img = self.augmenter(img)
 
         return img
 
