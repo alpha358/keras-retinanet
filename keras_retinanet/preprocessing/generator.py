@@ -416,6 +416,7 @@ class Generator(keras.utils.Sequence):
         image_group, annotations_group = self.filter_annotations(image_group, annotations_group, group)
 
         # randomly transform data
+        #  augument -> grayscale conversion
         image_group, annotations_group = self.random_transform_group(image_group, annotations_group)
 
         # perform preprocessing steps
