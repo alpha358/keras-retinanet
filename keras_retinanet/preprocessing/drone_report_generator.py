@@ -66,7 +66,7 @@ class DroneReportGenerator(Generator):
         self.n_batches = n_batches
         self.max_n_birds = 2
         self.grayscale = grayscale
-        kwargs['grayscale', grayscale] # pass for parent class
+        kwargs['grayscale'] = grayscale # pass for parent class
 
         # self.augmenter_imgaug = augmenter_imgaug
         self.transform_generator = transform_generator

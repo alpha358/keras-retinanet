@@ -152,7 +152,7 @@ class CSVGenerator(Generator):
         self.base_dir    = base_dir
         self.augmenter   = augmenter
         self.grayscale = grayscale
-        kwargs['grayscale', grayscale] # pass for parent class
+        kwargs['grayscale'] = grayscale # pass for parent class
 
         self.bgr_to_rgb  = bgr_to_rgb
 
