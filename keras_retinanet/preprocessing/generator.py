@@ -327,7 +327,7 @@ class Generator(keras.utils.Sequence):
         """ Preprocess image and its annotations.
         """
         # preprocess the image
-        image = self.preprocess_image(image, mode='tf') # tf instead of caffe
+        image = self.preprocess_image(image) # mode='tf') # tf instead of caffe
 
         # resize image
         image, image_scale = self.resize_image(image)
