@@ -17,7 +17,6 @@ limitations under the License.
 import numpy as np
 import random
 import warnings
-
 import keras
 import cv2
 
@@ -187,7 +186,18 @@ class Generator(keras.utils.Sequence):
             Return (img, annotations)
             Used in later eval.py
         '''
-        return self.load_image(image_index), self.load_annotations(image_index)
+        image = self.load_image(image_index)
+        annot = self.load_annotations(image_index)
+
+        if self.grayscale:
+            # Assume BGR order, convert to grayscale
+            img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            # img_gray = np.mean(image, axis = 2) # simple solution
+            image[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
+            image[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
+            image[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
+
+        return image, annot
 
 
 
@@ -318,15 +328,6 @@ class Generator(keras.utils.Sequence):
         """
         # preprocess the image
         image = self.preprocess_image(image) # mode='tf') # tf instead of caffe
-
-        if self.grayscale:
-            # Assume BGR order, convert to grayscale
-            img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            # img_gray = np.mean(image, axis = 2) # simple solution
-            image[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
-            image[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
-            image[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
-
 
         # resize image
         image, image_scale = self.resize_image(image)
