@@ -19,7 +19,7 @@ import random
 import warnings
 import keras
 import cv2
-from matplotlib.pyplot import plt
+import matplotlib.pyplot as plt
 
 import imgaug as ia
 
