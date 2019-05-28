@@ -292,15 +292,6 @@ class Generator(keras.utils.Sequence):
                     annotations['bboxes'][index, :] = transform_aabb(transform, annotations['bboxes'][index, :])
 
 
-        # --------------------------------- Grayscale -------------------------------- #
-        if self.grayscale:
-            # Assume BGR order, convert to grayscale
-            # img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            img_gray = np.mean(img, axis = 2) # simple solution
-            image[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
-            image[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
-            image[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
-
         return image, annotations
 
     def random_transform_group(self, image_group, annotations_group):
@@ -327,6 +318,15 @@ class Generator(keras.utils.Sequence):
         """
         # preprocess the image
         image = self.preprocess_image(image) # mode='tf') # tf instead of caffe
+
+        if self.grayscale:
+            # Assume BGR order, convert to grayscale
+            img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            # img_gray = np.mean(image, axis = 2) # simple solution
+            image[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
+            image[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
+            image[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
+
 
         # resize image
         image, image_scale = self.resize_image(image)
@@ -415,7 +415,6 @@ class Generator(keras.utils.Sequence):
         image_group, annotations_group = self.filter_annotations(image_group, annotations_group, group)
 
         # randomly transform data
-        #  augument -> grayscale conversion
         image_group, annotations_group = self.random_transform_group(image_group, annotations_group)
 
         # perform preprocessing steps
