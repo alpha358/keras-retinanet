@@ -36,7 +36,13 @@ from ..utils.image import (
     resize_image,
 )
 from ..utils.transform import transform_aabb
+from ..utils.image import  cvt_grayscale
 
+
+
+
+def imnorm(x):
+    return (x - np.min(x)) / (np.max(x) - np.min(x))
 
 # ------------------------------- imgaug tools ------------------------------- #
 def to_imgaug_bboxes(bboxes, img_shape):
@@ -190,12 +196,7 @@ class Generator(keras.utils.Sequence):
         annot = self.load_annotations(image_index)
 
         if self.grayscale:
-            # Assume BGR order, convert to grayscale
-            img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            # img_gray = np.mean(image, axis = 2) # simple solution
-            image[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
-            image[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
-            image[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
+            image = cvt_grayscale(image)
 
         return image, annot
 
@@ -282,8 +283,9 @@ class Generator(keras.utils.Sequence):
 
             # TODO: test for bbox distortion
             annotations['bboxes'] = np.array(annotations['bboxes'], dtype=np.float)
-            # for bbox in to_plain_bboxes(bboxes_imgaug):
 
+            if self.grayscale:
+                image = cvt_grayscale(image)
 
         else:
             # randomly transform both image and annotations

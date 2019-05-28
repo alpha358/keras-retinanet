@@ -1,7 +1,7 @@
 # ---------------------------------- Imports --------------------------------- #
 
 from .generator import Generator
-from ..utils.image import read_image_bgr
+from ..utils.image import read_image_bgr, cvt_grayscale
 
 import numpy as np
 from PIL import Image
@@ -184,12 +184,10 @@ class DroneReportGenerator(Generator):
             x2, y2,
         ]]))
 
-        #
+        # --------------------------------- grayscale -------------------------------- #
         if self.grayscale:
-            gray_img = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
-            images[0][:,:, 0] = gray_img
-            images[0][:,:, 1] = gray_img
-            images[0][:,:, 2] = gray_img
+            images[0] = cvt_grayscale(images[0])
+
 
         # return 0-th image
         return images[0], annotations

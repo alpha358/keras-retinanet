@@ -195,3 +195,27 @@ def resize_image(img, min_side=800, max_side=1333):
     img = cv2.resize(img, None, fx=scale, fy=scale)
 
     return img, scale
+
+
+
+# ---------------------------------------------------------------------------- #
+#                      Custom functions added by Alfonsas                      #
+# ---------------------------------------------------------------------------- #
+def cvt_grayscale(img):
+    '''
+    Convert input image to grayscale image with 3 channels
+
+    Assuming BGR image uint8 input.
+    Returns: grayscale image with 3 channels
+    '''
+    assert img.dtype == np.uint8
+    image = img.copy()
+    # Assume BGR order, convert to grayscale
+    img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # img_gray = np.mean(image, axis = 2) # simple solution
+    image[:, :, 0] = np.asarray(img_gray, dtype=np.uint8)
+    image[:, :, 1] = np.asarray(img_gray, dtype=np.uint8)
+    image[:, :, 2] = np.asarray(img_gray, dtype=np.uint8)
+
+    return image

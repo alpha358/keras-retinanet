@@ -16,7 +16,7 @@ limitations under the License.
 """
 
 from .generator import Generator
-from ..utils.image import read_image_bgr
+from ..utils.image import read_image_bgr, cvt_grayscale
 
 import numpy as np
 from PIL import Image
@@ -275,13 +275,7 @@ class Drones_Cut_Paste_Generator(Generator):
         fake_img, bbox = resize_img_and_bbox(fake_img, bbox, self.image_shape)
 
         if self.grayscale:
-            # TODO: check
-            gray = cv2.cvtColor(fake_img, cv2.COLOR_RGB2GRAY) # TODO: may need GBR2GRAY
-            fake_img[:,:,0] = gray
-            fake_img[:,:,1] = gray
-            fake_img[:,:,2] = gray
-            fake_img = fake_img / np.max(fake_img) * 255
-            fake_img = np.asarray(fake_img, np.uint8)
+            fake_img = cvt_grayscale(fake_img)
 
             # fake_img = np.assaray(np.mean(fake_img, axis=2)
 
