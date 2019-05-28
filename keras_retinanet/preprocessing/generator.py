@@ -19,6 +19,7 @@ import random
 import warnings
 import keras
 import cv2
+from matplotlib.pyplot import plt
 
 import imgaug as ia
 
@@ -37,6 +38,7 @@ from ..utils.image import (
 )
 from ..utils.transform import transform_aabb
 from ..utils.image import  cvt_grayscale
+from ..utils.visualization import draw_boxes
 
 
 
@@ -448,3 +450,42 @@ class Generator(keras.utils.Sequence):
         inputs, targets = self.compute_input_output(group)
 
         return inputs, targets
+
+
+
+
+# ---------------------------------------------------------------------------- #
+#                                     TESTS                                    #
+# ---------------------------------------------------------------------------- #
+
+def _grayscale_test(generator, n_example = 1):
+
+    # ------------------------------- For training ------------------------------- #
+    # Compute with augmentator effects
+    inputs, targets = generator.compute_input_output( [n_example] )
+    img = inputs[0]
+    # bbox = targets[0]
+    # draw_boxes(img, bbox, (255, 255, 0), thickness=1)
+    plt.imshow(img)
+    plt.title('compute_input_output (for training)')
+    plt.show()
+
+    plt.imshow( imnorm(img) )
+    plt.title('compute_input_output (for training) [normalized]')
+    plt.show()
+
+    # ------------------------------ For Evaluation ------------------------------ #
+    raw_image, annotations = generator.generate_example(n_example)
+
+    plt.imshow(raw_image)
+    plt.title('Image for evaluation')
+    plt.show()
+
+
+    image = generator.preprocess_image(raw_image.copy())
+    # bbox = annotations['bbox']
+    plt.imshow(image)
+    plt.title('Image for evaluation [Preprocessed]')
+    plt.show()
+
+
