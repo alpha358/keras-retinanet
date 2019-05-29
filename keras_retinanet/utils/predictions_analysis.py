@@ -31,13 +31,13 @@ def iou(box1, box2):
     # Intersection
     xi1 = np.maximum(box1[0], box2[0])
     yi1 = np.maximum(box1[1], box2[1])
-    xi2 = np.minimum(box1[0] + box1[2], box2[0] + box2[2])
-    yi2 = np.minimum(box1[1] + box1[3], box2[1] + box2[3])
+    xi2 = np.minimum(box1[2], box2[2])
+    yi2 = np.minimum(box1[3], box2[3])
     inter_area = max(xi2 - xi1, 0) * max(yi2 - yi1, 0)
 
     # Union
-    box1_area = box1[2] * box1[3]
-    box2_area = box2[2] * box2[3]
+    box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1])
+    box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1])
     union_area = box1_area + box2_area - inter_area
 
     return inter_area / union_area
