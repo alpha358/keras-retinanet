@@ -62,6 +62,75 @@ def zipdir(path, ziph):
             ziph.write(os.path.join(root, file))
 
 
+# ---------------------------- non-max suppresion ---------------------------- #
+# Malisiewicz et al.
+def non_max_suppression_fast(boxes, probs, overlapThresh):
+    '''
+    boxes --- bboxes [box_idx, coord_idx]
+    probs --- probabilities of bboxes
+    '''
+
+    # if there are no boxes, return an empty list
+    if len(boxes) == 0:
+        return []
+
+    # if the bounding boxes integers, convert them to floats --
+    # this is important since we'll be doing a bunch of divisions
+    if boxes.dtype.kind == "i":
+        boxes = boxes.astype("float")
+
+    # initialize the list of picked indexes
+    pick = []
+
+    # grab the coordinates of the bounding boxes
+    x1 = boxes[:,0]
+    y1 = boxes[:,1]
+    x2 = boxes[:,2]
+    y2 = boxes[:,3]
+
+    # compute the area of the bounding boxes and sort the bounding
+    # boxes by the bottom-right y-coordinate of the bounding box
+    area = (x2 - x1) * (y2 - y1)
+#     idxs = np.argsort(y2)
+    # Correct, sort the probabilities based on argsort in descending order (higher probabilities at the front of the list).
+    idxs = np.argsort(probs)
+
+    # keep looping while some indexes still remain in the indexes
+    # list
+    while len(idxs) > 0:
+        # grab the last index in the indexes list and add the
+        # index value to the list of picked indexes
+        last = len(idxs) - 1
+        i = idxs[last]
+        pick.append(i)
+
+        # find the largest (x, y) coordinates for the start of
+        # the bounding box and the smallest (x, y) coordinates
+        # for the end of the bounding box
+        xx1 = np.maximum( x1[i], x1[idxs[:last]] )
+        yy1 = np.maximum( y1[i], y1[idxs[:last]] )
+        xx2 = np.minimum( x2[i], x2[idxs[:last]] )
+        yy2 = np.minimum( y2[i], y2[idxs[:last]] )
+
+
+        # compute the width and height of the bounding box
+        w = np.maximum(0, xx2 - xx1)
+        h = np.maximum(0, yy2 - yy1)
+
+        intersection = w * h
+        union = (area[i] + area[idxs[:last]]) - intersection
+
+        # compute the ratio of overlap
+        iou = intersection / (union + 1e-16)
+
+        # delete all indexes from the index list that have
+        idxs = np.delete(idxs, np.concatenate(([last],
+            np.where(iou > overlapThresh)[0] )))
+
+    # return only the bounding boxes that were picked using the
+    # integer data type
+    return pick
+
 
 # ----------------------------------- misc ----------------------------------- #
 def inspect_frame_gt(generator, n_frame):
@@ -315,11 +384,6 @@ def plot_detections(
             plt.show()
 
     return detections_dict
-
-
-
-
-
 
 
 
@@ -700,6 +764,17 @@ def detector_one_sheet(
                     table_csv['y1'].append(y1)
                     table_csv['x2'].append(x2)
                     table_csv['y2'].append(y2)
+
+            # over each image in img_idx
+            # # ---------------------------- non-max suppresion ---------------------------- #
+            nms_indices = non_max_suppression_fast(np.array(pred_boxes[img_idx]), np.array(probs), overlapThresh = 0.3)
+            table_csv['img_name'] = np.array(table_csv['img_name'])[nms_indices]
+            table_csv['p'] = np.array(table_csv['p'])[nms_indices]
+            table_csv['x1'] = np.array(table_csv['x1'])[nms_indices]
+            table_csv['y1'] = np.array(table_csv['y1'])[nms_indices]
+            table_csv['x2'] = np.array(table_csv['x2'])[nms_indices]
+            table_csv['y2'] = np.array(table_csv['y2'])[nms_indices]
+            # # ------------------------------------- . ------------------------------------ #
 
         pred_annotations_df = pd.DataFrame(table_csv)
         pred_annotations_df.to_csv(os.path.join(report_dir, csv_fname), index = False)
