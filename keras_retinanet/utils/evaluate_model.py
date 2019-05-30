@@ -706,8 +706,12 @@ def detector_one_sheet(
     plot_here = True,
     aux_annot = None, # auxiliary annotations for comparison
     save_detections_csv = True,
-    csv_fname = 'detections.csv'
+    csv_fname = 'detections.csv',
+    nms_iou = 0.3
     ):
+    '''
+        if nms_iou is not None
+    '''
 
     # Try to create report directories
     os.mkdir(report_dir)
@@ -751,9 +755,16 @@ def detector_one_sheet(
             # list of predicted bboxes for an image
             bboxes = pred_boxes[img_idx]
 
-            # iterate over detections in image
-            for n in range(len(probs)):
+            # compute nms indices
+            nms_indices = non_max_suppression_fast(
+                                    np.array(pred_boxes[img_idx]),
+                                    np.array(probs),
+                                    overlapThresh = nms_iou
+                                )
 
+            # iterate over detections in image
+            # for n in range(len(probs)):
+            for n in nms_indices:
                 if probs[n] >= 0:
                     # read bbox
                     x1, y1, x2, y2 = bboxes[n]
@@ -767,13 +778,12 @@ def detector_one_sheet(
 
             # over each image in img_idx
             # # ---------------------------- non-max suppresion ---------------------------- #
-            nms_indices = non_max_suppression_fast(np.array(pred_boxes[img_idx]), np.array(probs), overlapThresh = 0.3)
-            table_csv['img_name'] = np.array(table_csv['img_name'])[nms_indices]
-            table_csv['p'] = np.array(table_csv['p'])[nms_indices]
-            table_csv['x1'] = np.array(table_csv['x1'])[nms_indices]
-            table_csv['y1'] = np.array(table_csv['y1'])[nms_indices]
-            table_csv['x2'] = np.array(table_csv['x2'])[nms_indices]
-            table_csv['y2'] = np.array(table_csv['y2'])[nms_indices]
+            # table_csv['img_name'] = np.array(table_csv['img_name'])[nms_indices]
+            # table_csv['p'] = np.array(table_csv['p'])[nms_indices]
+            # table_csv['x1'] = np.array(table_csv['x1'])[nms_indices]
+            # table_csv['y1'] = np.array(table_csv['y1'])[nms_indices]
+            # table_csv['x2'] = np.array(table_csv['x2'])[nms_indices]
+            # table_csv['y2'] = np.array(table_csv['y2'])[nms_indices]
             # # ------------------------------------- . ------------------------------------ #
 
         pred_annotations_df = pd.DataFrame(table_csv)
