@@ -755,7 +755,7 @@ def detector_one_sheet(
             # list of predicted bboxes for an image
             bboxes = pred_boxes[img_idx]
 
-            # compute nms indices
+            # compute nms indices for a single image
             nms_indices = non_max_suppression_fast(
                                     np.array(pred_boxes[img_idx]),
                                     np.array(probs),

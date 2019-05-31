@@ -271,11 +271,15 @@ def evaluate(
         scores          = np.zeros((0,))
         num_annotations = 0.0
 
+        # iteration over images
         for i in range(generator.size()):
             detections           = all_detections[i][label]
             annotations          = all_annotations[i][label]
             num_annotations     += annotations.shape[0]
             detected_annotations = []
+
+            # compute false negatives
+
 
             for d in detections:
                 scores = np.append(scores, d[4])
