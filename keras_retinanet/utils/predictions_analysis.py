@@ -14,9 +14,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from collections import defaultdict
-from tqdm import tqdm
-import cProfile
-import pickle
 
 
 # ============================================================================ #
@@ -42,6 +39,21 @@ def iou(box1, box2):
 
     return inter_area / union_area
 
+
+def coords_to_bbox(coords, bbox):
+    '''
+    Translates bbox so that its center would be at coords. Used to convert
+    predicted center coordinates to a bounding box for simple comparison.
+    '''
+
+    # Required translations
+    delta_x = coords[0] - 0.5 * (bbox[0] + bbox[2])
+    delta_y = coords[1] - 0.5 * (bbox[1] + bbox[3])
+
+    return (bbox[0] + delta_x, bbox[1] + delta_y,
+            bbox[2] + delta_x, bbox[3] + delta_y)
+
+
 # ============================================================================ #
 #                                  READING CSV                                 #
 # ============================================================================ #
@@ -59,47 +71,47 @@ def get_gt_annotations(dataset_name):
 # pred_annotations_df = pd.read_csv(os.path.join('predictions', names[0], datasets[0], 'detections.csv'))
 
 
-# -------------------- Converting dataframe to dictionary -------------------- #
+# -------------------- Concerting dataframe to dictionary -------------------- #
 
-def get_detection_dictionaries(true_annotations_df, pred_annotations_df):
+def true_annotations_to_dict(df):
     '''
     Purpose: convert pandas dataframes to dicts in required format
-
-    Input
-        true_annotations_df --- true annotation dataframe
-        pred_annotations_df --- predicted annotations dataframe
-
-    Returns:
-        true_annotations --- true_annotations[img_name] = bbox
-        pred_annotations --- predicted annotations dictionary pred_annotations[img_name] = [(bbox, p), ...]
-
-    #TODO: Make a faster conversion using pandas builtin methods
+    Returns: dict[img_name] = bbox
     '''
+    data_dict = {}
+    for row in df.itertuples():
+        bbox = (row.x1, row.y1, row.x2, row.y2)
+        file_name = row.img_name
+        data_dict[file_name] = bbox
 
-    img_names = list(set(list(pred_annotations_df.img_name)))
-    N_detections = len(img_names)
+    return data_dict
 
-    true_annotations = {}
-    pred_annotations = defaultdict(list)
 
-    # iterating over images used to test the network
-    for img_name in tqdm(img_names):
+def pred_annotations_to_dict(df):
+    '''
+    Purpose: convert pandas dataframes to dicts in required format
+    Returns: dict[img_name] = [(bbox, p), ...]
+    '''
+    data_dict = defaultdict(list)
+    for row in df.itertuples():
+        bbox = (row.x1, row.y1, row.x2, row.y2)
+        prob = row.p
+        file_name = row.img_name
+        data_dict[file_name].append((bbox, prob))
 
-        row_gt = true_annotations_df.loc[true_annotations_df['img_name']
-                                         == img_name].iloc[0]
-        bbox_true = tuple(row_gt[['x1', 'y1', 'x2', 'y2']])
+    return data_dict
 
-        true_annotations[img_name] = bbox_true
 
-        for index, row in pred_annotations_df.loc[pred_annotations_df['img_name'] == img_name].iterrows():
-            # read prediction from dataframe row
-            bbox_pred = tuple(row[['x1', 'y1', 'x2', 'y2']])
-            p_pred = row[['p']][0]
+def remove_missing_files(pred_dict, gt_dict):
+    '''
+    Remove entries from prediction that do not have corresponding ground truth
+    '''
+    new_pred_dict = pred_dict.copy()
+    for k in pred_dict.keys():
+        if not k in gt_dict:
+            del new_pred_dict[k]
 
-            pred_annotations[img_name].append((bbox_pred, p_pred))
-
-    return true_annotations, pred_annotations
-
+    return new_pred_dict
 
 # ============================================================================ #
 #                                COUNTING STATS                                #
@@ -107,7 +119,7 @@ def get_detection_dictionaries(true_annotations_df, pred_annotations_df):
 
 
 # -------------------------- single image detections ------------------------- #
-def process_image_detections(img_name, pred_annotations, true_annotations):
+def process_image_detections(img_name, pred_annotations, true_annotations, only_coords=False):
     '''
     Return bbox overlaps and probs for one image.
 
@@ -129,14 +141,23 @@ def process_image_detections(img_name, pred_annotations, true_annotations):
     else:
         n_drones_true = 1  # assuming only one drone
 
-    # iterating over predictions
-    for bbox_pred, p_pred in pred_annotations[img_name]:
-        probs.append(p_pred)
-        if n_drones_true == 0:
-            # compute iou
-            overlaps.append(0)  # zero iou if there is no drone
-        else:
-            overlaps.append(iou(bbox_pred, bbox_true))
+
+    if img_name in pred_annotations:
+        # iterating over predictions
+        for bbox_pred, p_pred in pred_annotations[img_name]:
+            probs.append(p_pred)
+            if n_drones_true == 0:
+                # compute iou
+                overlaps.append(0)  # zero iou if there is no drone
+            else:
+                if only_coords:
+                    bbox_pred = coords_to_bbox(bbox_pred[:2], bbox_true)
+
+                overlaps.append(iou(bbox_pred, bbox_true))
+    else:
+        overlaps.append(0)
+        probs.append(0)
+
 
     return np.array(overlaps), np.array(probs), n_drones_true
 
@@ -145,7 +166,8 @@ def process_image_detections(img_name, pred_annotations, true_annotations):
 def get_detection_stats(pred_annotations,
                         true_annotations,
                         p_thresh,
-                        iou_thresh):
+                        iou_thresh,
+                        only_coords=False):
     '''
     Purpose: count the number of
         TN, TP, FN, FP
@@ -160,6 +182,8 @@ def get_detection_stats(pred_annotations,
     p_thresh          ---  detection treshold
     iou_thresh        ---  iou treshold
 
+    Assumes that no detection is made if there is no img_name in pred_annotations.
+
     '''
     detections = defaultdict(list)
 
@@ -169,14 +193,15 @@ def get_detection_stats(pred_annotations,
     FP = 0
     FN = 0
 
-    img_names = list(pred_annotations.keys())
+    img_names = list(true_annotations.keys())
     N_detections = len(img_names)
 
     for img_name in (img_names):
         # load all overlaps and probs for an image
         overlaps, probs, n_drones_true = process_image_detections(img_name,
                                                                   pred_annotations,
-                                                                  true_annotations)
+                                                                  true_annotations,
+                                                                  only_coords=only_coords)
 
         good_overlap = overlaps > iou_thresh
         confident = probs > p_thresh
@@ -208,7 +233,12 @@ def get_detection_stats(pred_annotations,
 
 
 
-def compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations, p_min=0.05, p_max=0.9):
+def compute_detection_stats_vs_p_thresh(pred_annotations,
+                                        true_annotations,
+                                        p_min=0.05,
+                                        p_max=0.9,
+					iou_threshold=0.1,
+                                        only_coords=False):
     '''
     Purpose: compute detection statistics by varying p_threshold
 
@@ -222,14 +252,19 @@ def compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations, p_mi
     Output:
         TN, TP, FN, FP, P
     '''
+
+    precision = []
+    recall = []
+
     TN, TP, FN, FP = [], [], [], []
 
     P = np.linspace(p_min, p_max, 50)
-    for p in tqdm(P):
+    for p in P:
         tn, tp, fn, fp = get_detection_stats(pred_annotations,
                                              true_annotations,
                                              p_thresh=p,
-                                             iou_thresh=0.5)
+                                             iou_thresh=iou_threshold,
+                                             only_coords=only_coords)
         TN.append(tn)
         TP.append(tp)
         FN.append(fn)
@@ -240,8 +275,6 @@ def compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations, p_mi
 # ============================================================================ #
 #                                     PLOTS                                    #
 # ============================================================================ #
-
-
 
 def plot_detection_analysis(TN, TP, FN, FP, p_thresh, save_folder):
 
@@ -322,6 +355,69 @@ def plot_detection_analysis(TN, TP, FN, FP, p_thresh, save_folder):
     plt.show()
 
 
+def plot_confusion_matrix(TN, TP, FN, FP, P, name=None, file_name=None):
+
+    plt.figure(figsize=(10, 8))
+    if name is not None:
+        plt.suptitle(name)
+
+    plt.subplot(2, 2, 1)
+    plt.plot(P, TN)
+    plt.xlabel('p_thresh')
+    plt.title('True Negative')
+
+    plt.subplot(2, 2, 2)
+    plt.plot(P, TP)
+    plt.xlabel('p_thresh')
+    plt.title('True Positive')
+
+    plt.subplot(2, 2, 3)
+    plt.plot(P, FN)
+    plt.xlabel('p_thresh')
+    plt.title('False Negative')
+
+    plt.subplot(2, 2, 4)
+    plt.plot(P, FP)
+    plt.xlabel('p_thresh')
+    plt.title('False Positive')
+
+    plt.tight_layout()
+    if file_name is None:
+        plt.show()
+    else:
+        plt.savefig(file_name)
+
+
+def plot_precision_recall_F1(TN, TP, FN, FP, P, name=None, file_name=None):
+
+    precision = TP / (TP + FP + 1e-16)
+    recall = TP / (TP + FN + 1e-16)
+    F1 = 2 * precision * recall / (precision + recall + 1e-16)
+
+    plt.figure(figsize=(10, 5))
+    if name is not None:
+        plt.suptitle(name)
+
+    plt.subplot(1, 2, 1)
+    plt.plot(recall, precision)
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+
+    plt.subplot(1, 2, 2)
+    plt.plot(P, F1)
+    plt.xlabel('p_thresh')
+    plt.ylabel('F1')
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+
+
+    plt.tight_layout()
+    if file_name is None:
+        plt.show()
+    else:
+        plt.savefig(file_name)
 
 
 # ============================================================================ #
@@ -335,23 +431,11 @@ if __name__ == 'main':
     true_annotations_df = pd.read_csv('annotations.csv')
 
     # Convert dataframes  to dictionaries for speed
-    true_annotations, pred_annotations = get_detection_dictionaries(true_annotations_df, pred_annotations_df)
+    true_annotations = true_annotations_to_dict(true_annotations_df)
+    pred_annotations = pred_annotations_to_dict(pred_annotations_df)
+    pred_annotations = remove_missing_files(pred_annotations, true_annotations)
 
     # Compute the relevant detection statistics
-    TN, TP, FN, FP, P_thresh = compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations)
+    TN, TP, FN, FP, P = compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations)
 
-    # save detections statistics
-    detection_stats = {
-        'TN' : TN,
-        'TP' : TP,
-        'FN' : FN,
-        'FP' : FP,
-        'P_thresh'  : P_thresh
-    }
-
-    # save detections statistics
-    with open('stats.pickle', mode='wb') as h:
-        pickle.dump(detection_stats, h)
-
-    save_folder = ''
-    plot_detection_analysis(TN, TP, FN, FP, P_thresh, save_folder)
+    plot_detection_analysis(TN, TP, FN, FP, P)

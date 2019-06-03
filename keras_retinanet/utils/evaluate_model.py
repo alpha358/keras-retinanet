@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 
 
 from keras_retinanet.utils.predictions_analysis import *
-
+import pickle
 # ============================================================================ #
 #                                SHOW DETECTIONS                               #
 # ============================================================================ #
@@ -930,7 +930,10 @@ def detector_one_sheet(
                                         names=[ 'img_name', 'x1', 'y1', 'x2', 'y2', 'class'])
 
     # Convert dataframes  to dictionaries for speed
-    true_annotations, pred_annotations = get_detection_dictionaries(true_annotations_df, pred_annotations_df)
+    true_annotations = true_annotations_to_dict(true_annotations_df)
+    pred_annotations = pred_annotations_to_dict(pred_annotations_df)
+    pred_annotations = remove_missing_files(pred_annotations, true_annotations)
+    # true_annotations, pred_annotations = get_detection_dictionaries(true_annotations_df, pred_annotations_df)
 
     # Compute the relevant detection statistics
     TN, TP, FN, FP, p_thresholds = compute_detection_stats_vs_p_thresh(pred_annotations, true_annotations)
@@ -945,11 +948,14 @@ def detector_one_sheet(
     }
 
     # save detections statistics
-    with open(os.path.join(report_dir, 'stats.pickle'), mode='wb') as h:
-        pickle.dump(detection_stats, h)
-
+    try:
+        with open(os.path.join(report_dir, 'stats.pickle'), mode='wb') as h:
+            pickle.dump(detection_stats, h)
+    except:
+        print('failed to pickle prediction stats')
 
     plot_detection_analysis(TN, TP, FN, FP, p_thresholds, report_dir)
+
 
 
     return p_optimal
