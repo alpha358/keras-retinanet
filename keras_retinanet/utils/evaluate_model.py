@@ -746,7 +746,7 @@ def detector_one_sheet(
             'p':[],
         }
 
-        # iterate over images
+        # iterate over images --- iterations over only predicted bboxes
         for img_idx, probs in probs_of_boxes.items():
 
             # get image name
