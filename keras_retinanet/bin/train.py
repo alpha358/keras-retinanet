@@ -127,7 +127,7 @@ def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0,
         loss={
             'regression'    : losses.smooth_l1(),
             'classification': losses.focal(
-                                    alpha=0.25, gamma=2.0,
+                                    alpha=alpha, gamma=gamma,
                                     const_multiplier=focal_weight)
         },
         optimizer=keras.optimizers.adam(lr=lr, clipnorm=0.001)
