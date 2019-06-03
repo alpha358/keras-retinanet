@@ -58,6 +58,11 @@ def focal(alpha=0.25, gamma=2.0, const_multiplier = 1):
         # focal_weight = alpha_factor * focal_weight ** gamma
         focal_weight = alpha_factor * keras.backend.pow(focal_weight, gamma)
 
+        # force CE
+        if gamma == 0:
+            focal_weight = alpha_factor
+
+
         cls_loss = focal_weight * keras.backend.binary_crossentropy(labels, classification)
 
         # compute the normalizer: the number of positive anchors
