@@ -55,8 +55,8 @@ def focal(alpha=0.25, gamma=2.0, const_multiplier = 1):
         alpha_factor = keras.backend.ones_like(labels) * alpha
         alpha_factor = backend.where(keras.backend.equal(labels, 1), alpha_factor, 1 - alpha_factor)
         focal_weight = backend.where(keras.backend.equal(labels, 1), 1 - classification, classification)
-        # focal_weight = alpha_factor * focal_weight ** gamma
-        focal_weight = alpha_factor * keras.backend.pow(focal_weight, gamma)
+        focal_weight = alpha_factor * focal_weight ** gamma
+        # focal_weight = alpha_factor * keras.backend.pow(focal_weight, gamma)
 
         # force CE
         if gamma == 0:

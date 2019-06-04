@@ -400,6 +400,11 @@ class Combined_CSVGenerator(Generator):
         generator_idx, example_idx = self.generator_example_indices[image_index]
         return self.generators[generator_idx].image_aspect_ratio(example_idx)
 
+    def image_path(img_ixd):
+        '''
+        Dummy image path for csv generation
+        '''
+        return str(img_ixd)+'.jpg'
 
     def load_image(self, image_index):
         """ Load an image at the image_index.
