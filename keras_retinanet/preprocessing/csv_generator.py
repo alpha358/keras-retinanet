@@ -403,6 +403,7 @@ class Combined_CSVGenerator(Generator):
     def image_path(img_ixd):
         '''
         Dummy image path for csv generation
+        TODO: later make real paths
         '''
         return str(img_ixd)+'.jpg'
 

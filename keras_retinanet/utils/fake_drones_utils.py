@@ -41,10 +41,12 @@ def display_imgs(imgs):
 def plot_history(history):
     plt.figure(figsize=(8, 10))
 
-    plt.subplot(311)
+    ax_loss = plt.subplot(311)
     plt.plot(history.history['loss'])
     plt.plot(history.history['regression_loss'])
     plt.plot(history.history['classification_loss'])
+
+    ax_loss.set_yscale('log')
     plt.title('model loss')
     plt.ylabel('loss')
     plt.xlabel('epoch')
@@ -55,10 +57,11 @@ def plot_history(history):
     plt.title('mAP')
     plt.xlabel('epoch')
 
-    plt.subplot(313)
+    ax_lr = plt.subplot(313)
     plt.plot(history.history['lr'])
     plt.title('learning rate')
     plt.xlabel('epoch')
+    ax_lr.set_yscale('log')
 
     plt.subplots_adjust(hspace=0.5)
 
