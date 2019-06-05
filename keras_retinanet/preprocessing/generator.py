@@ -433,6 +433,16 @@ class Generator(keras.utils.Sequence):
 
         return inputs, targets
 
+    def get_all_bboxes(self):
+        '''
+        Purpose: Get bboxes of all images in the generator
+        '''
+        boxes = []
+        for n in range(self.size()):
+            boxes.append(self.load_annotations(n)['bboxes'][0])
+
+        return boxes
+
     def __len__(self):
         """
         Number of batches for generator.
