@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .generator_old import Generator
+from .generator_old import Generator_old
 from ..utils.image import read_image_bgr
 
 import numpy as np
@@ -110,7 +110,7 @@ def _open_for_csv(path):
         return open(path, 'r', newline='')
 
 
-class CSVGenerator(Generator):
+class CSVGenerator_old(Generator_old):
     """ Generate data for a custom CSV dataset.
 
     See https://github.com/fizyr/keras-retinanet#csv-datasets for more information.

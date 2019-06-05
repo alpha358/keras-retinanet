@@ -36,7 +36,7 @@ from ..utils.image import (
 from ..utils.transform import transform_aabb
 
 
-class Generator(keras.utils.Sequence):
+class Generator_old(keras.utils.Sequence):
     """ Abstract generator class.
     """
 
