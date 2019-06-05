@@ -135,6 +135,7 @@ class CSVGenerator_old(Generator_old):
         self.image_names = []
         self.image_data  = {}
         self.base_dir    = base_dir
+        self.csv_data_file = csv_data_file
 
         # Take base_dir from annotations file if not explicitly specified.
         if self.base_dir is None:

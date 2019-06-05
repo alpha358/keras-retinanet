@@ -154,12 +154,12 @@ class Generator_old(keras.utils.Sequence):
         for index, (image, annotations) in enumerate(zip(image_group, annotations_group)):
             # test x2 < x1 | y2 < y1 | x1 < 0 | y1 < 0 | x2 <= 0 | y2 <= 0 | x2 >= image.shape[1] | y2 >= image.shape[0]
             invalid_indices = np.where(
-                (annotations['bboxes'][:, 2] <= annotations['bboxes'][:, 0]) |
-                (annotations['bboxes'][:, 3] <= annotations['bboxes'][:, 1]) |
-                (annotations['bboxes'][:, 0] < 0) |
-                (annotations['bboxes'][:, 1] < 0) |
-                (annotations['bboxes'][:, 2] > image.shape[1]) |
-                (annotations['bboxes'][:, 3] > image.shape[0])
+                (annotations['bboxes'][:, 2] <= annotations['bboxes'][:, 0]) | # x2 < x1
+                (annotations['bboxes'][:, 3] <= annotations['bboxes'][:, 1]) | # y2 < y1
+                (annotations['bboxes'][:, 0] < 0) | # x1 < 0
+                (annotations['bboxes'][:, 1] < 0) | # y1 < 0
+                (annotations['bboxes'][:, 2] > image.shape[1]) |  # x2 >= image.shape[1]
+                (annotations['bboxes'][:, 3] > image.shape[0])   # y2 >= image.shape[0]
             )[0]
 
             # delete invalid indices
