@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .generator import Generator
+from .generator_old import Generator
 from ..utils.image import read_image_bgr
 
 import numpy as np
