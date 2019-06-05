@@ -159,7 +159,7 @@ class CSVGenerator_old(Generator_old):
             raise_from(ValueError('invalid CSV annotations file: {}: {}'.format(csv_data_file, e)), None)
         self.image_names = list(self.image_data.keys())
 
-        super(CSVGenerator, self).__init__(**kwargs)
+        super(CSVGenerator_old, self).__init__(**kwargs)
 
     def size(self):
         """ Size of the dataset.
