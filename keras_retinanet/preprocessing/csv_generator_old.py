@@ -80,10 +80,10 @@ def _read_annotations(csv_reader, classes):
             continue
 
 
-        x1 = _parse( np.floor(x1), int, 'line {}: malformed x1: {{}}'.format(line))
-        y1 = _parse( np.floor(y1), int, 'line {}: malformed y1: {{}}'.format(line))
-        x2 = _parse( np.floor(x2), int, 'line {}: malformed x2: {{}}'.format(line))
-        y2 = _parse( np.floor(y2), int, 'line {}: malformed y2: {{}}'.format(line))
+        x1 = _parse( np.floor(x1, dtype=np.int32), int, 'line {}: malformed x1: {{}}'.format(line))
+        y1 = _parse( np.floor(y1, dtype=np.int32), int, 'line {}: malformed y1: {{}}'.format(line))
+        x2 = _parse( np.floor(x2, dtype=np.int32), int, 'line {}: malformed x2: {{}}'.format(line))
+        y2 = _parse( np.floor(y2, dtype=np.int32), int, 'line {}: malformed y2: {{}}'.format(line))
 
         # Check that the bounding box is valid.
         if x2 <= x1:
