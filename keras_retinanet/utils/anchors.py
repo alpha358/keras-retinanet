@@ -143,8 +143,10 @@ def compute_gt_annotations(
         argmax_overlaps_inds: ordered overlaps indices
     """
 
-    overlaps = compute_overlap(anchors.astype(np.float64), annotations.astype(np.float64))
-    argmax_overlaps_inds = np.argmax(overlaps, axis=1)
+    # overlaps: (N, K) ndarray of overlap between boxes and query_boxes
+    # overlaps = compute_overlap(anchors.astype(np.float64), annotations.astype(np.float64))
+    overlaps = compute_overlap(annotations.astype(np.float64), anchors.astype(np.float64))
+    argmax_overlaps_inds = np.argmax(overlaps, axis=1) # max over anchor boxes
     max_overlaps = overlaps[np.arange(overlaps.shape[0]), argmax_overlaps_inds]
 
     # assign "dont care" labels
