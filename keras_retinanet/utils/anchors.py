@@ -149,7 +149,7 @@ def compute_gt_annotations(
 
     # assign "dont care" labels
     # positive_indices = max_overlaps >= positive_overlap
-    positive_indices = overlaps >= max_overlaps[4] # take closest 5 anchors
+    positive_indices = max_overlaps >= max_overlaps[4] # take closest 5 anchors
     ignore_indices = (max_overlaps > negative_overlap) & ~positive_indices
 
     return positive_indices, ignore_indices, argmax_overlaps_inds
