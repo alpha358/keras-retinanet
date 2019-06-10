@@ -109,7 +109,8 @@ def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0,
         num_anchors   = None
         if config and 'anchor_parameters' in config:
             anchor_params = parse_anchor_parameters(config)
-            num_anchors = anchor_params.num_anchors()
+
+    num_anchors = anchor_params.num_anchors()
 
     # Keras recommends initialising a multi-gpu model on the CPU to ease weight sharing, and to prevent OOM errors.
     # optionally wrap in a parallel model
