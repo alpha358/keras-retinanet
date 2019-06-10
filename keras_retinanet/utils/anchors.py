@@ -135,7 +135,8 @@ def compute_gt_annotations(
     anchors,
     annotations,
     negative_overlap=0.4,
-    positive_overlap=0.5
+    positive_overlap=0.5,
+    assign_missed = True
 ):
     """ Obtain indices of gt annotations with the greatest overlap.
     Args
@@ -172,11 +173,12 @@ def compute_gt_annotations(
     # best anchor for each bbox
     best_anchors_idx = np.argmax(overlaps, axis=0)
 
-    for missed_bbox_idx in missed_bbox_indices:
-        # assign lost bboxes
-        best_anchor = best_anchors_idx[missed_bbox_idx]
-        positive_indices[best_anchor] = 1
-        argmax_overlaps_inds[best_anchor] = missed_bbox_idx
+    if assign_missed:
+        for missed_bbox_idx in missed_bbox_indices:
+            # assign lost bboxes
+            best_anchor = best_anchors_idx[missed_bbox_idx]
+            positive_indices[best_anchor] = 1
+            argmax_overlaps_inds[best_anchor] = missed_bbox_idx
 
 
     return positive_indices, ignore_indices, argmax_overlaps_inds
@@ -187,6 +189,7 @@ def compute_missing_bbox_stats(
     anchor_params,
     generator,
     shape = (480, 640, 3),
+    assign_missed = True,
     n_max = 100):
     '''
     Purpose: Obtain number of ignored bboxes
@@ -220,7 +223,7 @@ def compute_missing_bbox_stats(
         overlaps = compute_overlap(anchors.astype(np.float64), annotations['bboxes'].astype(np.float64))
 
         # Compute gt annotations accoring to function used for training
-        positive_indices, ignore_indices, argmax_overlaps_inds = compute_gt_annotations(anchors, annotations['bboxes'])
+        positive_indices, ignore_indices, argmax_overlaps_inds = compute_gt_annotations(anchors, annotations['bboxes'], assign_missed)
 
         # {all box indices} - {maximally overlaping bboxes of positive anchors}
         missed_bbox_indices = list(
