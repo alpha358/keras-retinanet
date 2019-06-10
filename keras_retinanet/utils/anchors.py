@@ -223,7 +223,7 @@ def compute_missing_bbox_stats(
         overlaps = compute_overlap(anchors.astype(np.float64), annotations['bboxes'].astype(np.float64))
 
         # Compute gt annotations accoring to function used for training
-        positive_indices, ignore_indices, argmax_overlaps_inds = compute_gt_annotations(anchors, annotations['bboxes'], assign_missed)
+        positive_indices, ignore_indices, argmax_overlaps_inds = compute_gt_annotations(anchors, annotations['bboxes'], assign_missed=assign_missed)
 
         # {all box indices} - {maximally overlaping bboxes of positive anchors}
         missed_bbox_indices = list(
