@@ -26,7 +26,8 @@ import imgaug as ia
 from ..utils.anchors import (
     anchor_targets_bbox,
     anchors_for_shape,
-    guess_shapes
+    guess_shapes,
+    compute_missing_bbox_stats
 )
 from ..utils.config import parse_anchor_parameters
 from ..utils.image import (
@@ -462,6 +463,35 @@ class Generator(keras.utils.Sequence):
         return inputs, targets
 
 
+    # -------------------------- anchor box diagnostics -------------------------- #
+    def get_missing_bbox_stats(self, n_max = 100):
+
+        # ----------------------------- get anchor params ---------------------------- #
+        anchor_params = None
+        if self.config and 'anchor_parameters' in self.config:
+            anchor_params = parse_anchor_parameters(self.config)
+
+        # ------------------------------ get bbox stats ------------------------------ #
+        missed_box_count,\
+             missed_box_overlaps = compute_missing_bbox_stats(anchor_params, self, n_max = 100)
+
+        overlaps = np.array(missed_box_overlaps).flatten()
+
+        # -------------------------------- plot stats -------------------------------- #
+
+        plt.figure(figsize = (6,13))
+        plt.subplot(1,2,1)
+        plt.plot(missed_box_count)
+        plt.title('Missed bbox count')
+
+        plt.subplot(1,2,1)
+        plt.hist(overlaps)
+        plt.title('Missed bbox overlaps')
+        plt.show()
+
+
+        return missed_box_count, missed_box_overlaps
+
 
 
 # ---------------------------------------------------------------------------- #
@@ -497,5 +527,3 @@ def _grayscale_test(generator, n_example = 1):
     plt.imshow(image)
     plt.title('Image for evaluation [Preprocessed]')
     plt.show()
-
-
