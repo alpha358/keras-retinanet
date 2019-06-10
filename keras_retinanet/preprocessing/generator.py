@@ -476,7 +476,7 @@ class Generator(keras.utils.Sequence):
 
         # ------------------------------ get bbox stats ------------------------------ #
         missed_box_count,\
-             missed_box_overlaps = compute_missing_bbox_stats(self.anchor_params, self, n_max = 100, assign_missed=assign_missed)
+             missed_box_overlaps = compute_missing_bbox_stats(self.anchor_params, self, n_max = n_max, assign_missed=assign_missed)
 
         overlaps = np.array(missed_box_overlaps).flatten()
 
