@@ -161,7 +161,14 @@ def compute_gt_annotations(
     ignore_indices = (max_overlaps > negative_overlap) & ~positive_indices
 
     # --------------------------- assign missing bboxes -------------------------- #
-    missed_bbox_indices = argmax_overlaps_inds[~positive_indices]
+    # old way -- may not be the same
+    # missed_bbox_indices = argmax_overlaps_inds[~positive_indices]
+
+    # {all box indices} - {maximally overlaping bboxes of positive anchors}
+    missed_bbox_indices = list(
+            set(range(len(annotations))) - set(argmax_overlaps_inds[positive_indices])
+    )
+
     # best anchor for each bbox
     best_anchors_idx = np.argmax(overlaps, axis=0)
 
