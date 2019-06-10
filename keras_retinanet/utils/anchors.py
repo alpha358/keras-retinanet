@@ -186,15 +186,17 @@ def compute_gt_annotations(
 def compute_missing_bbox_stats(
     anchor_params,
     generator,
+    shape = (480, 640, 3),
     n_max = 100):
     '''
     Purpose: Obtain number of ignored bboxes
                 i.e. bboxes that are not assigned to any anchor.
 
     Input:
-        anchor_parames      ---
-        generator           ---
-        n_max               --- number of max examples for testing
+        anchor_parames  ---
+        generator       ---
+        n_max           --- number of max examples for testing
+        shape           --- specify shape for all images, for individual image shapes use False
 
     Output
         missed_box_count    --- number of bboxes missed for each example
