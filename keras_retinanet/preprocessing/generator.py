@@ -478,7 +478,10 @@ class Generator(keras.utils.Sequence):
         missed_box_count,\
              missed_box_overlaps = compute_missing_bbox_stats(self.anchor_params, self, n_max = n_max, assign_missed=assign_missed)
 
-        overlaps = np.array(missed_box_overlaps).flatten()
+        # flatten list of lists
+        flatten = lambda l: [item for sublist in l for item in sublist]
+
+        overlaps = np.array(flatten(missed_box_overlaps))
 
         # -------------------------------- plot stats -------------------------------- #
 
