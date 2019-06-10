@@ -211,16 +211,15 @@ def compute_missing_bbox_stats(
     missed_widths = []
     missed_heights = []
 
-
-    # assuming single shape for all images
     if shape == False:
-        shape = generator.load_image(0).shape
+            shape = generator.load_image(i).shape
     anchors = anchors_for_shape(shape, anchor_params=anchor_params)
 
     # iterate over examples
     for i in range(min(generator.size(), n_max)):
-
         # load the data
+        
+
         annotations = generator.load_annotations(i)
 
         # computing anchors overlap to gt bboxes
