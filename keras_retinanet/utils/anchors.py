@@ -183,16 +183,54 @@ def compute_gt_annotations(
 
 
 
-def compute_anchor_assignment_stats(
-    anchors,
+def compute_missing_bbox_stats(
+    anchor_params,
     generator,
-    negative_overlap=0.4,
-    positive_overlap=0.5):
+    n_max = 100):
     '''
     Purpose: Obtain number of ignored bboxes
                 i.e. bboxes that are not assigned to any anchor.
+
+    Input:
+        anchor_parames      ---
+        generator           ---
+        n_max               --- number of max examples for testing
+
+    Output
+        missed_box_count    --- number of bboxes missed for each example
+        missed_box_overlaps --- iou to the best anchor for each missed bbox
     '''
-    pass
+
+    missed_box_count = []
+    missed_box_overlaps = []
+
+
+    # iterate over examples
+    for i in range(min(generator.size(), n_max)):
+        # load the data
+        if shape == False:
+            shape = generator.load_image(i).shape
+
+        annotations = generator.load_annotations(i)
+        anchors = anchors_for_shape(shape, anchor_params=anchor_params)
+
+        # computing anchors overlap to gt bboxes
+        overlaps = compute_overlap(anchors.astype(np.float64), annotations.astype(np.float64))
+
+        # Compute gt annotations accoring to function used for training
+        positive_indices, ignore_indices, argmax_overlaps_inds = compute_gt_annotations(anchors, annotations['bboxes'])
+
+        # {all box indices} - {maximally overlaping bboxes of positive anchors}
+        missed_bbox_indices = list(
+                set(range(len(annotations))) - set(argmax_overlaps_inds[positive_indices])
+        )
+        missed_overlaps = overlaps[:, missed_bbox_indices]
+
+        #  append count of missed bboxes
+        missed_box_count.append(len(missed_bbox_indices))
+        missed_box_overlaps.append(missed_overlaps)
+
+    return missed_box_count, missed_box_overlaps
 
 
 

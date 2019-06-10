@@ -20,12 +20,13 @@ from . import backend
 
 # def focal(alpha=0.25, gamma=2.0, const_multiplier = 2):
 # def focal(alpha=0.25, gamma=2.0, const_multiplier = 1):
-def focal(alpha=0.25, gamma=2.0, const_multiplier = 1):
+def focal(alpha=0.25, gamma=2.0, clip_FL=False, const_multiplier = 1):
     """ Create a functor for computing the focal loss.
 
     Args
         alpha: Scale the focal weight with alpha.
         gamma: Take the power of the focal weight with gamma.
+        clip_FL: clip focal loss to improve stability of FL
 
     Returns
         A functor that computes the focal loss using the alpha and gamma.
@@ -55,6 +56,12 @@ def focal(alpha=0.25, gamma=2.0, const_multiplier = 1):
         alpha_factor = keras.backend.ones_like(labels) * alpha
         alpha_factor = backend.where(keras.backend.equal(labels, 1), alpha_factor, 1 - alpha_factor)
         focal_weight = backend.where(keras.backend.equal(labels, 1), 1 - classification, classification)
+
+        # clip focal loss
+        if clip_FL:
+            eps = 1e-12
+            focal_weight = backend.clip(focal_weight, eps, 1. - eps) #improve the stability of the focal loss
+
         focal_weight = alpha_factor * focal_weight ** gamma
         # focal_weight = alpha_factor * keras.backend.pow(focal_weight, gamma)
 
