@@ -82,7 +82,9 @@ def model_with_weights(model, weights, skip_mismatch):
 
 
 def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0,
-                  freeze_backbone=False, lr=1e-5, config=None, alpha=0.25, gamma=2.0, focal_weight = 1):
+                  freeze_backbone=False, lr=1e-5,
+                  anchor_params = None,
+                  config=None, alpha=0.25, gamma=2.0, focal_weight = 1):
     """ Creates three models (model, training_model, prediction_model).
 
     Args
@@ -102,11 +104,13 @@ def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0,
     modifier = freeze_model if freeze_backbone else None
 
     # load anchor parameters, or pass None (so that defaults will be used)
-    anchor_params = None
-    num_anchors   = None
-    if config and 'anchor_parameters' in config:
-        anchor_params = parse_anchor_parameters(config)
-        num_anchors   = anchor_params.num_anchors()
+
+    if anchor_params == None:
+        num_anchors   = None
+        if config and 'anchor_parameters' in config:
+            anchor_params = parse_anchor_parameters(config)
+
+    num_anchors = anchor_params.num_anchors()
 
     # Keras recommends initialising a multi-gpu model on the CPU to ease weight sharing, and to prevent OOM errors.
     # optionally wrap in a parallel model
