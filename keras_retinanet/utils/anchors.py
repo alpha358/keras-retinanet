@@ -95,24 +95,33 @@ def anchor_targets_bbox(
     regression_batch  = np.zeros((batch_size, anchors.shape[0], 4 + 1), dtype=keras.backend.floatx())
     labels_batch      = np.zeros((batch_size, anchors.shape[0], num_classes + 1), dtype=keras.backend.floatx())
 
-    # compute labels and regression targets
+    # ------------------- compute labels and regression targets ------------------ #
     for index, (image, annotations) in enumerate(zip(image_group, annotations_group)):
+        # index --- batch index
+
         if annotations['bboxes'].shape[0]:
-            # obtain indices of gt annotations with the greatest overlap
+
+            # -------- obtain indices of gt annotations with the greatest overlap -------- #
             positive_indices, ignore_indices, argmax_overlaps_inds = compute_gt_annotations(anchors, annotations['bboxes'], negative_overlap, positive_overlap)
 
+            # Set label - foreground vs background
+            #   last label idx is reserved for FG vs BG classification
             labels_batch[index, ignore_indices, -1]       = -1
             labels_batch[index, positive_indices, -1]     = 1
 
+            # set ignored  bbox prob.
             regression_batch[index, ignore_indices, -1]   = -1
+            # set positive bbox prob.
             regression_batch[index, positive_indices, -1] = 1
 
-            # compute target class labels
-            labels_batch[index, positive_indices, annotations['labels'][argmax_overlaps_inds[positive_indices]].astype(int)] = 1
+            # ------------------------ compute target class labels ----------------------- #
+            labels_ids = annotations['labels'][argmax_overlaps_inds[positive_indices]].astype(int)
+            labels_batch[index, positive_indices, labels_ids] = 1
 
-            regression_batch[index, :, :-1] = bbox_transform(anchors, annotations['bboxes'][argmax_overlaps_inds, :])
+            assigned_bboxes = annotations['bboxes'][argmax_overlaps_inds, :]
+            regression_batch[index, :, :-1] = bbox_transform(anchors, assigned_bboxes)
 
-        # ignore annotations outside of image
+        # -------------------- ignore annotations outside of image ------------------- #
         if image.shape:
             anchors_centers = np.vstack([(anchors[:, 0] + anchors[:, 2]) / 2, (anchors[:, 1] + anchors[:, 3]) / 2]).T
             indices = np.logical_or(anchors_centers[:, 0] >= image.shape[1], anchors_centers[:, 1] >= image.shape[0])
@@ -141,14 +150,42 @@ def compute_gt_annotations(
     """
 
     overlaps = compute_overlap(anchors.astype(np.float64), annotations.astype(np.float64))
+
+    # best bbox for each anchor
     argmax_overlaps_inds = np.argmax(overlaps, axis=1)
     max_overlaps = overlaps[np.arange(overlaps.shape[0]), argmax_overlaps_inds]
 
-    # assign "dont care" labels
     positive_indices = max_overlaps >= positive_overlap
+
+    # assign "dont care" labels
     ignore_indices = (max_overlaps > negative_overlap) & ~positive_indices
 
+    # --------------------------- assign missing bboxes -------------------------- #
+    missed_bbox_indices = argmax_overlaps_inds[~positive_indices]
+    # best anchor for each bbox
+    best_anchors_idx = np.argmax(overlaps, axis=0)
+
+    for missed_bbox_idx in missed_bbox_indices:
+        # assign lost bboxes
+        best_anchor = best_anchors_idx[missed_bbox_idx]
+        positive_indices[best_anchor] = 1
+        argmax_overlaps_inds[best_anchor] = missed_bbox_idx
+
+
     return positive_indices, ignore_indices, argmax_overlaps_inds
+
+
+
+def compute_anchor_assignment_stats(
+    anchors,
+    generator,
+    negative_overlap=0.4,
+    positive_overlap=0.5):
+    '''
+    Purpose: Obtain number of ignored bboxes
+                i.e. bboxes that are not assigned to any anchor.
+    '''
+    pass
 
 
 
