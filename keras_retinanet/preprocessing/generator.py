@@ -482,12 +482,12 @@ class Generator(keras.utils.Sequence):
 
         # -------------------------------- plot stats -------------------------------- #
 
-        plt.figure(figsize = (6,13))
+        plt.figure(figsize = (13,6))
         plt.subplot(1,2,1)
         plt.plot(missed_box_count)
         plt.title('Missed bbox count')
 
-        plt.subplot(1,2,1)
+        plt.subplot(1,2,2)
         plt.hist(overlaps)
         plt.title('Missed bbox overlaps')
         plt.show()
