@@ -481,7 +481,7 @@ class Generator(keras.utils.Sequence):
         # flatten list of lists
         flatten = lambda l: [item for sublist in l for item in sublist]
 
-        overlaps = np.array(flatten(missed_box_overlaps))
+        overlaps = np.array(flatten(missed_box_overlaps)).flatten()
 
         # -------------------------------- plot stats -------------------------------- #
 
@@ -490,10 +490,10 @@ class Generator(keras.utils.Sequence):
         plt.plot(missed_box_count)
         plt.title('Missed bbox count')
 
-        plt.subplot(1,2,2)
-        plt.hist(overlaps)
-        plt.title('Missed bbox overlaps')
-        plt.show()
+        # plt.subplot(1,2,2)
+        # plt.hist(overlaps)
+        # plt.title('Missed bbox overlaps')
+        # plt.show()
 
 
         return missed_box_count, missed_box_overlaps
