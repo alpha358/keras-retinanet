@@ -100,7 +100,8 @@ class Generator(keras.utils.Sequence):
         compute_anchor_targets=anchor_targets_bbox,
         compute_shapes=guess_shapes,
         preprocess_image=preprocess_image,
-        config = None,
+        config = None, # TODO: may become obsolete
+        anchor_params = None,
         augmenter_imgaug = None, # imgaug augmenter
         grayscale = False
     ):
@@ -131,6 +132,15 @@ class Generator(keras.utils.Sequence):
         self.config                 = config
         self.augmenter_imgaug       = augmenter_imgaug
         self.grayscale              = grayscale
+        self.anchor_params          = anchor_params
+
+
+        # Use default anchor parameters if none are defined,
+        #    use the params form config
+        if self.anchor_params == None:
+            if self.config and 'anchor_parameters' in self.config:
+                self.anchor_params = parse_anchor_parameters(self.config)
+
 
         # Define groups
         self.group_images()
@@ -387,11 +397,9 @@ class Generator(keras.utils.Sequence):
 
         return image_batch
 
-    def generate_anchors(self, image_shape):
-        anchor_params = None
-        if self.config and 'anchor_parameters' in self.config:
-            anchor_params = parse_anchor_parameters(self.config)
-        return anchors_for_shape(image_shape, anchor_params=anchor_params, shapes_callback=self.compute_shapes)
+    def generate_anchors(self, image_shape, anchor_params=None):
+
+        return anchors_for_shape(image_shape, anchor_params=self.anchor_params, shapes_callback=self.compute_shapes)
 
     def compute_targets(self, image_group, annotations_group):
         """ Compute target outputs for the network using images and their annotations.
@@ -466,14 +474,9 @@ class Generator(keras.utils.Sequence):
     # -------------------------- anchor box diagnostics -------------------------- #
     def get_missing_bbox_stats(self, n_max = 100):
 
-        # ----------------------------- get anchor params ---------------------------- #
-        anchor_params = None
-        if self.config and 'anchor_parameters' in self.config:
-            anchor_params = parse_anchor_parameters(self.config)
-
         # ------------------------------ get bbox stats ------------------------------ #
         missed_box_count,\
-             missed_box_overlaps = compute_missing_bbox_stats(anchor_params, self, n_max = 100)
+             missed_box_overlaps = compute_missing_bbox_stats(self.anchor_params, self, n_max = 100)
 
         overlaps = np.array(missed_box_overlaps).flatten()
 
