@@ -224,7 +224,7 @@ def compute_missing_bbox_stats(
 
         # {all box indices} - {maximally overlaping bboxes of positive anchors}
         missed_bbox_indices = list(
-                set(range(len(annotations))) - set(argmax_overlaps_inds[positive_indices])
+                set(range(len(annotations['bboxes']))) - set(argmax_overlaps_inds[positive_indices])
         )
         missed_overlaps = overlaps[:, missed_bbox_indices]
 
