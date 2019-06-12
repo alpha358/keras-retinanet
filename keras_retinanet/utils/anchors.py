@@ -183,6 +183,80 @@ def compute_gt_annotations(
 
     return positive_indices, ignore_indices, argmax_overlaps_inds
 
+# ---------------------------------------------------------------------------- #
+#                           Misssing bbox diagnostics                          #
+# ---------------------------------------------------------------------------- #
+from tqdm import tqdm
+
+def count_missing_bboxes(
+        anchor_params,
+        all_annotations,
+        shape = (480, 640, 3)
+    ):
+    '''
+    Purpose: Count missing bboxes given anchor parameters
+
+    all_annotations --- a list of all examples annotations
+    '''
+
+    missed_box_count = []
+    missed_box_overlaps = []
+    widths = []
+    heights = []
+    aspect_ratios = []
+    areas = []
+
+    # assuming single shape for all images
+    # if shape == False:
+    #     shape = generator.load_image(0).shape
+    anchors = anchors_for_shape(shape, anchor_params=anchor_params)
+
+    # iterate over examples
+    for i in tqdm(range(len(all_annotations))):
+
+        # load the data
+        annotations = all_annotations[i]
+
+        # computing anchors overlap to gt bboxes
+        overlaps = compute_overlap(anchors.astype(np.float64), annotations['bboxes'].astype(np.float64))
+
+        # Compute gt annotations accoring to function used for training
+        positive_indices, ignore_indices, argmax_overlaps_inds = compute_gt_annotations(anchors, annotations['bboxes'], assign_missed=False)
+
+        # {all box indices} - {maximally overlaping bboxes of positive anchors}
+        missed_bbox_indices = list(
+                set(range(len(annotations['bboxes']))) - set(argmax_overlaps_inds[positive_indices])
+        )
+
+        # get missed bboxes params
+        missed_bboxes = annotations['bboxes'][missed_bbox_indices]
+        for bbox in missed_bboxes:
+            x1, y1, x2, y2 = bbox
+            w = x2 - x1
+            h = y2 - y1
+            widths.append(w)
+            heights.append(h)
+            aspect_ratios.append(w / h)
+            areas.append(w*h)
+
+
+        missed_overlaps = overlaps[:, missed_bbox_indices]
+
+        #  append count of missed bboxes
+        missed_box_count.append(len(missed_bbox_indices))
+        missed_box_overlaps.append(missed_overlaps)
+
+    missed_bboxes_info = {
+        'widths': widths,
+        'heights': heights,
+        'aspect_ratios': aspect_ratios,
+        'overlaps':missed_box_overlaps,
+        'box_count': missed_box_count,
+        'areas' : areas
+    }
+
+    return missed_bboxes_info
+
 
 
 def compute_missing_bbox_stats(
@@ -243,6 +317,8 @@ def compute_missing_bbox_stats(
 
     return missed_box_count, missed_box_overlaps
 
+
+# ------------------------------------- . ------------------------------------ #
 
 
 def layer_shapes(image_shape, model):
