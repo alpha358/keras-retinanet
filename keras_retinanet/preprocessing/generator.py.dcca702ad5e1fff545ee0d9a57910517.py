@@ -104,8 +104,8 @@ class Generator(keras.utils.Sequence):
         anchor_params = None,
         augmenter_imgaug = None, # imgaug augmenter
         grayscale = False,
-        negative_overlap = 0.4,
         positive_overlap = 0.5,
+        negative_overlap = 0.4,
     ):
         """ Initialize Generator object.
 
@@ -135,8 +135,8 @@ class Generator(keras.utils.Sequence):
         self.augmenter_imgaug       = augmenter_imgaug
         self.grayscale              = grayscale
         self.anchor_params          = anchor_params
-        self.negative_overlap       = negative_overlap
-        self.positive_overlap       = positive_overlap
+        self.positive_overlap = 0.5,
+        negative_overlap = 0.4,
 
 
         # Use default anchor parameters if none are defined,
@@ -417,8 +417,8 @@ class Generator(keras.utils.Sequence):
             image_group,
             annotations_group,
             self.num_classes(),
-            negative_overlap = self.negative_overlap,
             positive_overlap = self.positive_overlap,
+            negative_overlap = self.negative_overlap,
         )
 
         return list(batches)

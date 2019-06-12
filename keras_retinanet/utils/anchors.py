@@ -300,7 +300,7 @@ def plot_missed_bboxes_histograms(missed_bboxes_info):
 
     plt.show()
 
-
+# ---------------------------------- /plots ---------------------------------- #
 
 def compute_missing_bbox_stats(
     anchor_params,
