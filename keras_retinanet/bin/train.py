@@ -47,6 +47,7 @@ from ..utils.config import read_config_file, parse_anchor_parameters
 from ..utils.keras_version import check_keras_version
 from ..utils.model import freeze as freeze_model
 from ..utils.transform import random_transform_generator
+from ..utils.anchors import AnchorParameters
 
 
 def makedirs(path):
@@ -105,10 +106,11 @@ def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0,
 
     # load anchor parameters, or pass None (so that defaults will be used)
 
-    if not anchor_params:
-        num_anchors   = None
+    if anchor_params == None:
         if config and 'anchor_parameters' in config:
             anchor_params = parse_anchor_parameters(config)
+        else:
+            anchor_params = AnchorParameters.default
 
     num_anchors = anchor_params.num_anchors()
 
