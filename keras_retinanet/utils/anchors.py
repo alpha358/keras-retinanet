@@ -17,6 +17,9 @@ limitations under the License.
 import numpy as np
 import keras
 
+from matplotlib.colors import LogNorm
+import matplotlib.pyplot as plt
+
 from ..utils.compute_overlap import compute_overlap
 
 
@@ -256,6 +259,46 @@ def count_missing_bboxes(
     }
 
     return missed_bboxes_info
+
+# ------------------------- Plot Missed bboxes stats ------------------------- #
+def plot_missed_bboxes_sizes(missed_bboxes_info):
+    '''
+        Purpose: Plot all missed bbox statistics.
+    '''
+    plt.figure(figsize=(8,7))
+    plt.hist2d(missed_bboxes_info['widths'], missed_bboxes_info['heights'],bins = 20, norm=LogNorm() )
+    plt.title('Missed BBoxes')
+    plt.xlabel('widths')
+    plt.ylabel('heights')
+    plt.colorbar()
+    plt.show()
+
+
+def plot_missed_bboxes_histograms(missed_bboxes_info):
+
+    plt.figure(figsize = (14,8))
+    plt.suptitle('Missed BBox Stats')
+
+    plt.subplot(2,2,1)
+    plt.hist(missed_bboxes_info['heights'])
+    plt.xlabel('height, px')
+
+
+    plt.subplot(2,2,2)
+    plt.hist(missed_bboxes_info['widths'])
+    plt.xlabel('width, px')
+
+
+    plt.subplot(2,2,3)
+    plt.hist(missed_bboxes_info['areas'])
+    plt.xlabel('area, px^2')
+
+
+    plt.subplot(2,2,4)
+    plt.hist(missed_bboxes_info['aspect_ratios'])
+    plt.xlabel('aspect ratio, width/height')
+
+    plt.show()
 
 
 
