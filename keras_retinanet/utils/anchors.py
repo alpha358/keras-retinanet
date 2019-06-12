@@ -194,7 +194,9 @@ from tqdm import tqdm
 def count_missing_bboxes(
         anchor_params,
         all_annotations,
-        shape = (480, 640, 3)
+        shape = (480, 640, 3),
+        negative_overlap=0.4,
+        positive_overlap=0.5
     ):
     '''
     Purpose: Count missing bboxes given anchor parameters
@@ -224,7 +226,13 @@ def count_missing_bboxes(
         overlaps = compute_overlap(anchors.astype(np.float64), annotations['bboxes'].astype(np.float64))
 
         # Compute gt annotations accoring to function used for training
-        positive_indices, ignore_indices, argmax_overlaps_inds = compute_gt_annotations(anchors, annotations['bboxes'], assign_missed=False)
+        positive_indices, ignore_indices,\
+             argmax_overlaps_inds = compute_gt_annotations(anchors,
+                                                            annotations['bboxes'],
+                                                            assign_missed=False,
+                                                            negative_overlap = negative_overlap,
+                                                            positive_overlap = positive_overlap,
+                                                            )
 
         # {all box indices} - {maximally overlaping bboxes of positive anchors}
         missed_bbox_indices = list(
