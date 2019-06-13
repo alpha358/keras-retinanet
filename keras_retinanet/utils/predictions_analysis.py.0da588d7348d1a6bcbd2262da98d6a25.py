@@ -284,7 +284,7 @@ def plot_detection_analysis(TN, TP, FN, FP, p_thresh, save_folder):
     accuracy = (TP + TN) / (TP + TN + FP + FN + 1e-16)
     F1 = 2*(precision * recall) / (precision + recall)
 
-    # --------------------------------- F1 --------------------------------- #
+    # --------------------------------- accuracy --------------------------------- #
     plt.figure(figsize=(7, 4))
     plt.plot(p_thresh, F1)
     plt.ylabel('F1')
@@ -326,7 +326,7 @@ def plot_detection_analysis(TN, TP, FN, FP, p_thresh, save_folder):
     plt.ylabel('Precision')
     plt.xlabel('Recall')
     plt.xlim(0,1)
-    plt.ylim(0,1)
+    plt.xlim(0,1)
     plt.grid(True)
     plt.savefig(os.path.join(save_folder, 'recall_precision.png'))
     plt.show()
