@@ -60,7 +60,7 @@ def focal(alpha=0.25, gamma=2.0, clip_FL=False, const_multiplier = 1):
         # clip focal loss
         if clip_FL:
             eps = 1e-12
-            focal_weight = backend.clip(focal_weight, eps, 1. - eps) #improve the stability of the focal loss
+            focal_weight = keras.backend.clip(focal_weight, eps, 1. - eps) #improve the stability of the focal loss
 
         focal_weight = alpha_factor * focal_weight ** gamma
         # focal_weight = alpha_factor * keras.backend.pow(focal_weight, gamma)
